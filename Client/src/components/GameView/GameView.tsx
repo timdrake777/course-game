@@ -1,67 +1,62 @@
 import Konva from "konva";
 import { CircleConfig } from "konva/lib/shapes/Circle";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Circle, KonvaNodeComponent, Layer, Stage, Text } from "react-konva";
-import changePosition from "../../utils/changePosition";
-import { CircleCustom } from "../../utils/constants";
 
 export const GameView = () => {
-  const viewRef = useRef<HTMLDivElement>(null);
-  const circleRef = useRef<Konva.Circle>(null);
+    const viewRef = useRef<HTMLDivElement>(null);
+    const circleRef = useRef<Konva.Circle>(null)
+    const [width, setWidth] = useState<number>();
+    const [height, setHeight] = useState<number>();
+    const [posX, setPosX] = useState<number>(200);
+    const [posY, setPosY] = useState<number>(300);
 
-  const [posX, setPosX] = useState<number>(CircleCustom.START_POSITION_X);
-  const [posY, setPosY] = useState<number>(CircleCustom.START_POSITION_Y);
+    let veloc = 50;
 
-  const handleUserKeyPress = useCallback(
-    (event: KeyboardEvent) => {
-      const { key } = event;
+    useLayoutEffect(() => {
+        setHeight(window.screen.height)
+        setWidth(viewRef.current?.clientWidth)
+    }, [viewRef]);
 
-      switch (key) {
-        case "ArrowUp":
-          event.preventDefault();
-          changePosition(circleRef, posY, setPosY, "y", -1);
-          break;
-        case "ArrowDown":
-          event.preventDefault();
-          changePosition(circleRef, posY, setPosY, "y", 1);
-          break;
-        case "ArrowLeft":
-          event.preventDefault();
-          changePosition(circleRef, posX, setPosX, "x", -1);
-          break;
-        case "ArrowRight":
-          event.preventDefault();
-          changePosition(circleRef, posX, setPosX, "x", 1);
-          break;
+    const handleUserKeyPress = useCallback((event: KeyboardEvent) => {
+        const { key } = event;
+        if (key === 'ArrowUp') {
+            event.preventDefault();
+            circleRef.current?.to({
+                duration: 0.2,
+                y: posY - 50,
+            })
+            setPosY((prev) => {
+                prev -= 50;
+                return prev;
+            })
+        } else if (key === 'ArrowDown') {
+            event.preventDefault();
+            circleRef.current?.to({
+                duration: 0.2,
+                y: posY + 50,
+            })
+            setPosY((prev) => {
+                prev += 50;
+                return prev;
+            })
+        }
+    }, [posX, posY]);
 
-        default:
-          break;
-      }
-    },
-    [posX, posY]
-  );
+    useEffect(() => {
+        window.addEventListener("keydown", handleUserKeyPress);
+        return () => {
+            window.removeEventListener("keydown", handleUserKeyPress);
+        };
+    }, [handleUserKeyPress]);
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleUserKeyPress);
-    return () => {
-      window.removeEventListener("keydown", handleUserKeyPress);
-    };
-  }, [handleUserKeyPress]);
-
-  return (
-    <div ref={viewRef}>
-      <Stage height={window.innerHeight} width={window.innerWidth}>
-        <Layer height={window.innerHeight} width={window.innerWidth}>
-          <Circle
-            ref={circleRef}
-            width={CircleCustom.CIRCLE_SIZE}
-            height={CircleCustom.CIRCLE_SIZE}
-            fill="#000"
-            x={CircleCustom.START_POSITION_X}
-            y={CircleCustom.START_POSITION_Y}
-          />
-        </Layer>
-      </Stage>
-    </div>
-  );
-};
+    return (
+        <div ref={viewRef}>
+            <Stage height={height} width={width}>
+                <Layer height={height} width={width}>
+                    <Circle ref={circleRef} width={30} height={30} fill="#000" x={200} y={300} draggable />
+                </Layer>
+            </Stage>
+        </div>
+    );
+}

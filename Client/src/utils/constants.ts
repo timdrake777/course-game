@@ -1,5 +1,0 @@
-export enum CircleCustom {
-  CIRCLE_SIZE = 30,
-  START_POSITION_X = CIRCLE_SIZE,
-  START_POSITION_Y = CIRCLE_SIZE,
-}
