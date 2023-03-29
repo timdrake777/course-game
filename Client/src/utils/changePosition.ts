@@ -1,40 +1,40 @@
-import { Circle } from "konva/lib/shapes/Circle";
+import { Sprite } from "konva/lib/shapes/Sprite";
 import { StateDispatch, IDirection, IDirectionSign } from "../interfaces";
-import { CircleCustom } from "./constants";
+import { CharacterConfig, StageConfig } from "./constants";
 
 const changePosition = (
-  ref: React.RefObject<Circle>,
+  ref: React.RefObject<Sprite>,
   position: number,
   setPosition: StateDispatch<number>,
   direction: IDirection,
-  directionSign: IDirectionSign,
+  directionSign: IDirectionSign
 ) => {
   let changePos;
 
   if (
     direction === "x" &&
-    position + CircleCustom.CIRCLE_SIZE * directionSign < window.innerWidth &&
-    position + CircleCustom.CIRCLE_SIZE * directionSign > 0
+    position + CharacterConfig.STEP * directionSign < StageConfig.STAGE_WIDTH &&
+    position + CharacterConfig.STEP * directionSign >= 0
   ) {
-    changePos = { x: position + CircleCustom.CIRCLE_SIZE * directionSign };
+    changePos = { x: position + CharacterConfig.STEP * directionSign };
   }
 
   if (
     direction === "y" &&
-    position + CircleCustom.CIRCLE_SIZE * directionSign < window.innerHeight &&
-    position + CircleCustom.CIRCLE_SIZE * directionSign > 0
+    position + CharacterConfig.STEP * directionSign < StageConfig.STAGE_HEIGHT &&
+    position + CharacterConfig.STEP * directionSign >= 0
   ) {
-    changePos = { y: position + CircleCustom.CIRCLE_SIZE * directionSign };
+    changePos = { y: position + CharacterConfig.STEP * directionSign };
   }
 
   if (!changePos) return;
 
   ref.current?.to({
-    duration: 0.2,
+    duration: 0.5,
     ...changePos,
   });
 
-  setPosition(position + CircleCustom.CIRCLE_SIZE * directionSign);
+  setPosition(position + CharacterConfig.STEP * directionSign);
 };
 
-export default changePosition
+export default changePosition;
