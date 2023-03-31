@@ -1,6 +1,6 @@
 import Konva from "konva";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Circle, KonvaNodeComponent, Layer, Rect, Sprite, Stage, Text } from "react-konva";
+import { Layer, Rect, Sprite, Stage} from "react-konva";
 import useImage from "use-image";
 import changePosition from "../../utils/changePosition";
 import {
@@ -31,7 +31,10 @@ export const GameView = () => {
   const arrowTimeout = () =>
     setTimeout(() => {
       keyDownTimeoutRef.current = undefined;
-      setAnimationType(AnimationType.IDLE);
+      if (keyUpRef.current) {
+        setAnimationType(AnimationType.IDLE);
+        keyUpRef.current = false;
+      }
     }, 500);
 
   const handleUserKeyPress = useCallback(
@@ -39,7 +42,6 @@ export const GameView = () => {
       const { key } = event;
 
       if (keyDownTimeoutRef.current) {
-        console.log(keyDownTimeoutRef.current);
         return;
       }
 
@@ -82,7 +84,7 @@ export const GameView = () => {
 
   useEffect(() => {
     window.addEventListener("keydown", handleUserKeyPress);
-    // window.addEventListener("keyup", handleUserKeyUp);
+    window.addEventListener("keyup", handleUserKeyUp);
     return () => {
       window.removeEventListener("keydown", handleUserKeyPress);
       window.removeEventListener("keyup", handleUserKeyUp);
