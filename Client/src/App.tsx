@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import { GameView } from './components/GameView/GameView'
+import { MainPage } from './components/MainPage/MainPage'
 
 function App() {
-  return <GameView />
+  return (
+    <MainPage />
+  )
 }
 
 export default App

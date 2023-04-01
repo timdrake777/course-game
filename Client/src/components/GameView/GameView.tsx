@@ -14,6 +14,8 @@ import BgImagePNG from "../../assets/Background/Floor.png";
 import characterPNG from "../../assets/Character/character.png";
 import { IAnimationType } from "../../interfaces";
 
+import styles from './GameView.module.scss'
+
 export const GameView = () => {
   const viewRef = useRef<HTMLDivElement>(null);
   const characterRef = useRef<Konva.Sprite>(null);
@@ -94,7 +96,7 @@ export const GameView = () => {
   }, [characterImage]);
 
   return (
-    <div ref={viewRef}>
+    <div ref={viewRef} className={styles.gameViewSection}>
       <Stage height={StageConfig.STAGE_HEIGHT} width={StageConfig.STAGE_WIDTH}>
         <Layer>
           <Rect
