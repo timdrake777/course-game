@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import wallXIn from "../../../assets/ConfigTemplates/wall-x_in.png";
 import wallXOut from "../../../assets/ConfigTemplates/wall-x_out.png";
@@ -9,6 +9,7 @@ import wallYReversed from "../../../assets/ConfigTemplates/wall-y-rev.png";
 import wallYDark from "../../../assets/ConfigTemplates/wall-y-dark.png";
 import wallYReversedDark from "../../../assets/ConfigTemplates/wall-y-rev-dark.png";
 import floor from "../../../assets/ConfigTemplates/Floor.png";
+import { LevelContextValues } from "../LevelContext";
 
 interface Props {
   areaKey: number;
@@ -16,15 +17,21 @@ interface Props {
 }
 
 const AreaItem = (props: Props) => {
+  const { addHandler } = useContext(LevelContextValues);
+
   const [areaKey, setAreaKey] = useState<number>(props.areaKey);
   const [image, setImage] = useState<string>();
+
+  const valueRef = useRef<number>(props.areaKey);
 
   const changeKey = () => {
     if (areaKey + 1 > 8) {
       setAreaKey(0);
+      valueRef.current = 0;
       return;
     }
     setAreaKey(areaKey + 1);
+    valueRef.current += 1;
   };
 
   const changeTexture = () => {
@@ -61,9 +68,11 @@ const AreaItem = (props: Props) => {
         break;
     }
   };
+  const getValue = () => valueRef.current;
 
   useEffect(() => {
     changeTexture();
+    addHandler(getValue, props.position);
   }, [areaKey]);
 
   return (
