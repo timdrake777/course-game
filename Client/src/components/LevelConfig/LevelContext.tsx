@@ -8,7 +8,7 @@ interface Props {
 
 interface LevelContext {
   saveAreaValues: () => void;
-  addHandler: (getFunc: () => number, position: [number, number]) => void;
+  addHandler: (key: number, position: [number, number]) => void;
 }
 
 export const LevelContextValues = React.createContext<LevelContext>({
@@ -25,17 +25,19 @@ const LevelContext = ({ children, ...props }: Props) => {
   const valuesArrayRef = useRef<number[][]>(props.levelConfig);
 
   const saveAreaValues = () => {
-    handlersRef.current.map((item) => {
-      console.log(item.getFunc(), item.position)
+    let arr = props.levelConfig;
+    handlersRef.current.forEach((item) => {
       
-      valuesArrayRef.current[item.position[0]][item.position[1]] = item.getFunc();
+      
+      arr[item.position[0]][item.position[1]] = item.key;
+      console.log(item.key, item.position, arr[item.position[0]][item.position[1]])
     })
-    console.log(valuesArrayRef.current);
+    console.log(arr);
   };
 
-  const addHandler = (getFunc: () => number, position: [number, number]) => {
+  const addHandler = (key: number, position: [number, number]) => {
     handlersRef.current.push({
-      getFunc,
+      key,
       position,
     });
   };

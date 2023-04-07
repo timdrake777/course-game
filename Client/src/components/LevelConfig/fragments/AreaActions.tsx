@@ -5,7 +5,7 @@ const AreaActions = () => {
   const {saveAreaValues} = useContext(LevelContextValues);
   return (
     <div className="buttons flex h-1/6 w-full bg-slate-800/50 rounded-md border border-slate-700/50">
-      <button onClick={saveAreaValues}>Сохранить</button>
+      <button onClick={saveAreaValues} className="bg-red-300">Сохранить</button>
     </div>
   );
 };

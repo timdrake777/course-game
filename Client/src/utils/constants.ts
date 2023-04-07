@@ -30,13 +30,12 @@ export const CHARACTER_SPRITE_ANIMATIONS = {
 export const createLeveltemplate = (height: number = 4, width: number = 4): number[][] => {
   let levelConfigTemplate: number[][] = new Array(height);
 
-  levelConfigTemplate.fill(new Array(width));
+  for(let i = 0; i < levelConfigTemplate.length; i++) {
+    levelConfigTemplate[i] = new Array(width).fill(0);
+  }
 
-  levelConfigTemplate = levelConfigTemplate.map((item) => {
-    item.fill(0);
-    return item;
-  })
-
+  console.log(levelConfigTemplate);
+  
   return levelConfigTemplate;
 }
 

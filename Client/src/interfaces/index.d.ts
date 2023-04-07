@@ -4,6 +4,6 @@ export type IDirection = "x" | "y";
 export type IAnimationType = "idle" | "down" | "up" | "right" | "left"
 
 export interface IConfigHandler {
-  getFunc: () => number;
+  key: number;
   position: [number, number];
 }

@@ -22,16 +22,12 @@ const AreaItem = (props: Props) => {
   const [areaKey, setAreaKey] = useState<number>(props.areaKey);
   const [image, setImage] = useState<string>();
 
-  const valueRef = useRef<number>(props.areaKey);
-
   const changeKey = () => {
     if (areaKey + 1 > 8) {
       setAreaKey(0);
-      valueRef.current = 0;
       return;
     }
     setAreaKey(areaKey + 1);
-    valueRef.current += 1;
   };
 
   const changeTexture = () => {
@@ -68,11 +64,10 @@ const AreaItem = (props: Props) => {
         break;
     }
   };
-  const getValue = () => valueRef.current;
 
   useEffect(() => {
     changeTexture();
-    addHandler(getValue, props.position);
+    addHandler(areaKey, props.position);
   }, [areaKey]);
 
   return (
