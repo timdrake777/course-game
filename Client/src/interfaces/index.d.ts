@@ -7,3 +7,14 @@ export interface IConfigHandler {
   key: number;
   position: [number, number];
 }
+
+export interface ILevelConfig {
+  points: number[][];
+  width: () => number;
+  height: () => number;
+}
+
+export interface IAreaSize {
+  width: number;
+  height: number;
+}

@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { IConfigHandler } from "../../interfaces";
+import storageActions from "../../utils/storageActions";
 
 interface Props {
   children: React.ReactNode;
@@ -22,17 +23,13 @@ export const LevelContextValues = React.createContext<LevelContext>({
 
 const LevelContext = ({ children, ...props }: Props) => {
   const handlersRef = useRef<IConfigHandler[]>([]);
-  const valuesArrayRef = useRef<number[][]>(props.levelConfig);
 
   const saveAreaValues = () => {
     let arr = props.levelConfig;
     handlersRef.current.forEach((item) => {
-      
-      
       arr[item.position[0]][item.position[1]] = item.key;
-      console.log(item.key, item.position, arr[item.position[0]][item.position[1]])
-    })
-    console.log(arr);
+    });
+    storageActions.setLevelConfig(arr);
   };
 
   const addHandler = (key: number, position: [number, number]) => {

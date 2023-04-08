@@ -1,6 +1,6 @@
 import Konva from "konva";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Layer, Rect, Sprite, Stage} from "react-konva";
+import { Layer, Rect, Sprite, Stage } from "react-konva";
 import useImage from "use-image";
 import changePosition from "../../utils/changePosition";
 import {
@@ -12,7 +12,8 @@ import {
 
 import BgImagePNG from "../../assets/Background/Floor.png";
 import characterPNG from "../../assets/Character/character.png";
-import { IAnimationType } from "../../interfaces";
+import { IAnimationType, ILevelConfig } from "../../interfaces";
+import storageActions from "../../utils/storageActions";
 
 export const GameView = () => {
   const viewRef = useRef<HTMLDivElement>(null);
@@ -21,6 +22,7 @@ export const GameView = () => {
   const [posX, setPosX] = useState<number>(CharacterConfig.START_POSITION_X);
   const [posY, setPosY] = useState<number>(CharacterConfig.START_POSITION_Y);
   const [animationType, setAnimationType] = useState<IAnimationType>(AnimationType.IDLE);
+  const [levelConfig, setLevelConfig] = useState<ILevelConfig | null>();
 
   const keyUpRef = useRef<boolean>(false);
   const keyDownTimeoutRef = useRef<number>();
@@ -36,6 +38,10 @@ export const GameView = () => {
         keyUpRef.current = false;
       }
     }, 500);
+
+  const getConfig = () => {
+    setLevelConfig(storageActions.getLevelConfig());
+  };
 
   const handleUserKeyPress = useCallback(
     (event: KeyboardEvent) => {
@@ -78,7 +84,7 @@ export const GameView = () => {
     [posX, posY]
   );
 
-  const handleUserKeyUp = async () => {
+  const handleUserKeyUp = () => {
     keyUpRef.current = true;
   };
 
@@ -91,18 +97,22 @@ export const GameView = () => {
     };
   }, [handleUserKeyPress]);
 
+  useEffect(() => {
+    getConfig();
+  }, []);
+
   useLayoutEffect(() => {
     characterRef.current?.start();
   }, [characterImage]);
 
   return (
-    <div ref={viewRef}>
-      <Stage height={StageConfig.STAGE_HEIGHT} width={StageConfig.STAGE_WIDTH}>
+    <div ref={viewRef} className="w-1/2 h-full flex item-center justify-center">
+      <Stage height={levelConfig?.height()} width={levelConfig?.width()}>
         <Layer>
           <Rect
             fillPatternImage={bgImage as HTMLImageElement}
-            width={window.innerWidth}
-            height={window.innerHeight}
+            width={levelConfig?.width()}
+            height={levelConfig?.height()}
           />
           <Sprite
             ref={characterRef}
