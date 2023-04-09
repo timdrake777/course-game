@@ -2,9 +2,11 @@ import React, { useContext } from "react";
 import { LevelContextValues } from "../LevelContext";
 import GameButton from "../../Templates/GameButton";
 import GameInput from "../../Templates/GameInput";
+import { IAreaSize } from "../../../interfaces";
 
 interface Props {
   changeAreaSize: (height: number, width: number) => void;
+  areaSize: IAreaSize;
 }
 
 const AreaActions = (props: Props) => {
@@ -14,6 +16,11 @@ const AreaActions = (props: Props) => {
     e.preventDefault();
 
     let formData = new FormData(e.target as HTMLFormElement);
+
+    props.changeAreaSize(
+      Number.parseInt(`${formData.get("height")}`),
+      Number.parseInt(`${formData.get("width")}`)
+    );
   };
   return (
     <div className="buttons flex h-1/6 w-full bg-slate-800/50 rounded-md border border-slate-700/50">
@@ -28,9 +35,9 @@ const AreaActions = (props: Props) => {
             type="number"
             name="width"
             header="Ширина"
-            maxValueGame={10}
+            maxValueGame={20}
             minValueGame={1}
-            value={1}
+            value={props.areaSize.width}
           />
         </div>
         <div className="w-32">
@@ -38,9 +45,9 @@ const AreaActions = (props: Props) => {
             type="number"
             name="height"
             header="Высота"
-            maxValueGame={10}
+            maxValueGame={20}
             minValueGame={1}
-            value={1}
+            value={props.areaSize.height}
           />
         </div>
         <GameButton func="ok" type="submit">

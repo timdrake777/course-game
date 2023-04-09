@@ -12,10 +12,10 @@ const storageActions = {
     let config: ILevelConfig = {
       points: JSON.parse(storage) as number[][],
       height: function() {
-        return this.points.length * StageConfig.BG_ITEM_SIZE / 2 
+        return this.points.length * StageConfig.BG_ITEM_SIZE
       },
       width: function() {
-        return this.points[0].length * StageConfig.BG_ITEM_SIZE / 2
+        return this.points[0].length * StageConfig.BG_ITEM_SIZE
       }
     }
     return config;

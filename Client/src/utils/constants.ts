@@ -14,7 +14,7 @@ export enum AnimationType {
 }
 
 export enum StageConfig {
-  BG_ITEM_SIZE = 64,
+  BG_ITEM_SIZE = 32,
   STAGE_HEIGHT = window.innerHeight,
   STAGE_WIDTH = BG_ITEM_SIZE * 12,
 }

@@ -30,9 +30,11 @@ const GameInput = ({
       props.type === "number"
     ) {
       if (maxValueGame && targetValue > maxValueGame) setCurrentValue(maxValueGame);
-      if (minValueGame && targetValue < minValueGame) setCurrentValue(minValueGame);
+      else if (minValueGame && targetValue < minValueGame) setCurrentValue(minValueGame);
+      else setCurrentValue(currentValue);
       return;
     }
+
     setCurrentValue(targetValue);
   };
 
