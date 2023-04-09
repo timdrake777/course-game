@@ -107,7 +107,7 @@ export const GameView = () => {
 
   return (
     <div ref={viewRef}>
-      {levelConfig && (
+      {levelConfig ? (
         <Stage height={levelConfig.height()} width={levelConfig.width()}>
           <Layer>
             <Rect
@@ -131,6 +131,10 @@ export const GameView = () => {
             />
           </Layer>
         </Stage>
+      ) : (
+        <div>
+          <p>Создайте уровень в /config</p>
+        </div>
       )}
     </div>
   );

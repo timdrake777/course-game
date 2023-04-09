@@ -26,7 +26,7 @@ const AreaActions = (props: Props) => {
     <div className="buttons flex h-1/6 w-full bg-slate-800/50 rounded-md border border-slate-700/50">
       <div className="w-1/2 flex items-center justify-around">
         <GameButton onClick={saveAreaValues} func="ok">
-          Сохранить
+          Сохранить шаблон
         </GameButton>
       </div>
       <form className="w-1/2 flex items-center justify-center" onSubmit={handlerSubmit}>
@@ -51,7 +51,7 @@ const AreaActions = (props: Props) => {
           />
         </div>
         <GameButton func="ok" type="submit">
-          Сохранить
+          Сохранить размер
         </GameButton>
       </form>
     </div>
