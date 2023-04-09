@@ -1,6 +1,6 @@
 import Konva from "konva";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Circle, KonvaNodeComponent, Layer, Rect, Sprite, Stage, Text } from "react-konva";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Layer, Rect, Sprite, Stage } from "react-konva";
 import useImage from "use-image";
 import changePosition from "../../utils/changePosition";
 import {
@@ -12,20 +12,23 @@ import {
 
 import BgImagePNG from "../../assets/Background/Floor.png";
 import characterPNG from "../../assets/Character/character.png";
-import { IAnimationType } from "../../interfaces";
-
-import styles from './GameView.module.scss'
+import { IAnimationType, ILevelConfig, IObstacle, IPosition } from "../../interfaces";
+import storageActions from "../../utils/storageActions";
+import obstacleSprites from "../../utils/obstacleSprites";
 
 export const GameView = () => {
   const viewRef = useRef<HTMLDivElement>(null);
   const characterRef = useRef<Konva.Sprite>(null);
+  const keyUpRef = useRef<boolean>(false);
+  const keyDownTimeoutRef = useRef<number>();
 
   const [posX, setPosX] = useState<number>(CharacterConfig.START_POSITION_X);
   const [posY, setPosY] = useState<number>(CharacterConfig.START_POSITION_Y);
   const [animationType, setAnimationType] = useState<IAnimationType>(AnimationType.IDLE);
-
-  const keyUpRef = useRef<boolean>(false);
-  const keyDownTimeoutRef = useRef<number>();
+  const [levelConfig, setLevelConfig] = useState<ILevelConfig | null>(
+    storageActions.getLevelConfig()
+  );
+  const obstacles = useMemo(() => obstacleSprites(levelConfig), [levelConfig]);
 
   const [bgImage] = useImage(BgImagePNG);
   const [characterImage] = useImage(characterPNG);
@@ -33,41 +36,48 @@ export const GameView = () => {
   const arrowTimeout = () =>
     setTimeout(() => {
       keyDownTimeoutRef.current = undefined;
-      setAnimationType(AnimationType.IDLE);
+      if (keyUpRef.current) {
+        setAnimationType(AnimationType.IDLE);
+        keyUpRef.current = false;
+      }
     }, 500);
 
   const handleUserKeyPress = useCallback(
     (event: KeyboardEvent) => {
       const { key } = event;
 
-      if (keyDownTimeoutRef.current) {
-        console.log(keyDownTimeoutRef.current);
+      if (keyDownTimeoutRef.current || !levelConfig) {
         return;
       }
+
+      let absolutePosition: IPosition = {
+        x: posX,
+        y: posY,
+      };
 
       switch (key) {
         case "ArrowUp":
           event.preventDefault();
           keyDownTimeoutRef.current = arrowTimeout();
-          changePosition(characterRef, posY, setPosY, "y", -1);
+          changePosition(characterRef, absolutePosition, setPosY, "y", -1, levelConfig);
           setAnimationType(AnimationType.UP);
           break;
         case "ArrowDown":
           event.preventDefault();
           keyDownTimeoutRef.current = arrowTimeout();
-          changePosition(characterRef, posY, setPosY, "y", 1);
+          changePosition(characterRef, absolutePosition, setPosY, "y", 1, levelConfig);
           setAnimationType(AnimationType.DOWN);
           break;
         case "ArrowLeft":
           event.preventDefault();
           keyDownTimeoutRef.current = arrowTimeout();
-          changePosition(characterRef, posX, setPosX, "x", -1);
+          changePosition(characterRef, absolutePosition, setPosX, "x", -1, levelConfig);
           setAnimationType(AnimationType.LEFT);
           break;
         case "ArrowRight":
           event.preventDefault();
           keyDownTimeoutRef.current = arrowTimeout();
-          changePosition(characterRef, posX, setPosX, "x", 1);
+          changePosition(characterRef, absolutePosition, setPosX, "x", 1, levelConfig);
           setAnimationType(AnimationType.RIGHT);
           break;
 
@@ -78,13 +88,13 @@ export const GameView = () => {
     [posX, posY]
   );
 
-  const handleUserKeyUp = async () => {
+  const handleUserKeyUp = () => {
     keyUpRef.current = true;
   };
 
   useEffect(() => {
     window.addEventListener("keydown", handleUserKeyPress);
-    // window.addEventListener("keyup", handleUserKeyUp);
+    window.addEventListener("keyup", handleUserKeyUp);
     return () => {
       window.removeEventListener("keydown", handleUserKeyPress);
       window.removeEventListener("keyup", handleUserKeyUp);
@@ -96,29 +106,36 @@ export const GameView = () => {
   }, [characterImage]);
 
   return (
-    <div ref={viewRef} className={styles.gameViewSection}>
-      <Stage height={StageConfig.STAGE_HEIGHT} width={StageConfig.STAGE_WIDTH}>
-        <Layer>
-          <Rect
-            fillPatternImage={bgImage as HTMLImageElement}
-            width={window.innerWidth}
-            height={window.innerHeight}
-          />
-          <Sprite
-            ref={characterRef}
-            width={CharacterConfig.CHARACTER_SIZE}
-            height={CharacterConfig.CHARACTER_SIZE}
-            x={CharacterConfig.START_POSITION_X}
-            y={CharacterConfig.START_POSITION_Y}
-            scale={{ x: 0.65, y: 0.65 }}
-            image={characterImage as HTMLImageElement}
-            animations={CHARACTER_SPRITE_ANIMATIONS}
-            frameRate={6}
-            frameIndex={0}
-            animation={animationType}
-          />
-        </Layer>
-      </Stage>
+    <div ref={viewRef}>
+      {levelConfig ? (
+        <Stage height={levelConfig.height()} width={levelConfig.width()}>
+          <Layer>
+            <Rect
+              fillPatternImage={bgImage as HTMLImageElement}
+              width={levelConfig.width()}
+              height={levelConfig.height()}
+            />
+            {obstacles}
+            <Sprite
+              ref={characterRef}
+              width={CharacterConfig.CHARACTER_SIZE}
+              height={CharacterConfig.CHARACTER_SIZE}
+              x={CharacterConfig.START_POSITION_X}
+              y={CharacterConfig.START_POSITION_Y}
+              scale={{ x: 0.65, y: 0.65 }}
+              image={characterImage as HTMLImageElement}
+              animations={CHARACTER_SPRITE_ANIMATIONS}
+              frameRate={6}
+              frameIndex={0}
+              animation={animationType}
+            />
+          </Layer>
+        </Stage>
+      ) : (
+        <div>
+          <p>Создайте уровень в /config</p>
+        </div>
+      )}
     </div>
   );
 };
