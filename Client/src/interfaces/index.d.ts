@@ -25,3 +25,9 @@ export interface IPosition {
 }
 
 export type IObstacle = JSX.Element;
+export interface ICodeBlocks {
+    instanceName: string,
+    instanceMethod: string,
+    instanceValue: string,
+}
+
