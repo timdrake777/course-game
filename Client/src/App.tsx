@@ -3,12 +3,13 @@ import { GameView } from "./components/GameView/GameView";
 
 import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
 import LevelConfig from "./components/LevelConfig/LevelConfig";
+import { MainPage } from "./components/MainPage/MainPage";
 
 const router = createBrowserRouter(
   [
     {
       path: "/",
-      element: <GameView />,
+      element: <MainPage />,
     },
     {
       path: "/config",

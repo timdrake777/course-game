@@ -30,8 +30,6 @@ const obstacleSprites = (levelConfig: ILevelConfig | null) => {
     });
   });
 
-  console.log(spritesArray);
-
   return spritesArray;
 };
 

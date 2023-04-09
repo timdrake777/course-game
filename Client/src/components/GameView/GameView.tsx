@@ -15,8 +15,12 @@ import characterPNG from "../../assets/Character/character.png";
 import { IAnimationType, ILevelConfig, IObstacle, IPosition } from "../../interfaces";
 import storageActions from "../../utils/storageActions";
 import obstacleSprites from "../../utils/obstacleSprites";
+import GameButton from "../Templates/GameButton";
+import { useNavigate } from "react-router";
 
 export const GameView = () => {
+  const navigate = useNavigate();
+
   const viewRef = useRef<HTMLDivElement>(null);
   const characterRef = useRef<Konva.Sprite>(null);
   const keyUpRef = useRef<boolean>(false);
@@ -134,6 +138,7 @@ export const GameView = () => {
       ) : (
         <div>
           <p>Создайте уровень в /config</p>
+          <GameButton onClick={(e) => navigate("config")} func="ok" className="text-slate-700">Конфигурация</GameButton>
         </div>
       )}
     </div>
