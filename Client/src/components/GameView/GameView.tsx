@@ -15,8 +15,12 @@ import characterPNG from "../../assets/Character/character.png";
 import { IAnimationType, ILevelConfig, IObstacle, IPosition } from "../../interfaces";
 import storageActions from "../../utils/storageActions";
 import obstacleSprites from "../../utils/obstacleSprites";
+import GameButton from "../Templates/GameButton";
+import { useNavigate } from "react-router";
 
 export const GameView = () => {
+  const navigate = useNavigate();
+
   const viewRef = useRef<HTMLDivElement>(null);
   const characterRef = useRef<Konva.Sprite>(null);
   const keyUpRef = useRef<boolean>(false);
@@ -106,7 +110,7 @@ export const GameView = () => {
   }, [characterImage]);
 
   return (
-    <div ref={viewRef}>
+    <div ref={viewRef} className="w-1/2 h-full flex items-center justify-center">
       {levelConfig ? (
         <Stage height={levelConfig.height()} width={levelConfig.width()}>
           <Layer>
@@ -132,8 +136,11 @@ export const GameView = () => {
           </Layer>
         </Stage>
       ) : (
-        <div>
-          <p>Создайте уровень в /config</p>
+        <div className="flex flex-col items-center justify-center gap-2">
+          <p className="text-lg font-bold">Создайте уровень в /config</p>
+          <GameButton onClick={(e) => navigate("config")} func="ok" className="text-slate-700">
+            Конфигурация
+          </GameButton>
         </div>
       )}
     </div>

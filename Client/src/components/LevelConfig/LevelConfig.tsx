@@ -36,10 +36,6 @@ const LevelConfig = () => {
       } else {
         changedArray = changedArray.map((item) => item.slice(0, width));
       }
-
-      console.log(changedArray, height, width);
-      
-
       return changedArray;
     },
     [areaSize, levelConfig]
@@ -55,6 +51,11 @@ const LevelConfig = () => {
     setAreaSize({ width: config[0].length, height: config.length });
   }, []);
 
+  const deleteConfig = () => {
+    storageActions.deleteLevelConfig();
+    document.location.reload();
+  };
+
   const changeAreaSize = (height: number, width: number) => {
     setLevelConfig(changeArray(height, width));
     setAreaSize({ width, height });
@@ -68,7 +69,7 @@ const LevelConfig = () => {
       <LevelContext levelConfig={levelConfig || []}>
         <div className="min-w-main h-[95%] flex flex-col gap-10">
           <AreaConfig levelConfig={levelConfig || []} />
-          <AreaActions changeAreaSize={changeAreaSize} areaSize={areaSize} />
+          <AreaActions changeAreaSize={changeAreaSize} deleteConfig={deleteConfig} areaSize={areaSize} />
         </div>
       </LevelContext>
     </div>
