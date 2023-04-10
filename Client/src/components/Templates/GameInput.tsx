@@ -16,7 +16,7 @@ const GameInput = ({
   minValueGame,
   ...props
 }: Props) => {
-  const [currentValue, setCurrentValue] = useState<number>();
+  const [currentValue, setCurrentValue] = useState<number>(Number.parseInt(`${value}`));
 
   const handleValue = (e: any) => {
     onChange && onChange(e);

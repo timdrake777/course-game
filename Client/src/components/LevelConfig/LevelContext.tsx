@@ -27,8 +27,6 @@ const LevelContext = ({ children, ...props }: Props) => {
   const saveAreaValues = () => {
     let arr = props.levelConfig;
     handlersRef.current.forEach((item) => {
-      console.log(item.position);
-      
       arr[item.position[0]][item.position[1]] = item.key;
     });
     storageActions.setLevelConfig(arr);
@@ -49,8 +47,6 @@ const LevelContext = ({ children, ...props }: Props) => {
           item.position[1] >= props.levelConfig[0].length
         )
     );
-    console.log(handlersRef.current);
-    
   };
 
   useEffect(() => {

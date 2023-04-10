@@ -12,31 +12,22 @@ const getTexture = (areaKey: number) => {
   switch (areaKey) {
     case 0:
       return floor;
-
     case 1:
       return wallXIn;
-
     case 2:
       return wallXOut;
-
     case 3:
       return wallXCorner;
-
     case 4:
       return wallXCorner2;
-
     case 5:
       return wallY;
-
     case 6:
       return wallYDark;
-
     case 7:
       return wallYReversed;
-
     case 8:
       return wallYReversedDark;
-
     default:
       return "";
   }

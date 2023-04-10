@@ -1,5 +1,5 @@
-import React from "react";
 import AreaItem from "./AreaItem";
+import ConfigSection from "../../Templates/ConfigSection";
 
 interface Props {
   levelConfig: number[][];
@@ -7,7 +7,7 @@ interface Props {
 
 const AreaConfig = (props: Props) => {
   return (
-    <div className="config flex bg-slate-800/50 flex-col h-5/6 w-full justify-center items-center rounded-md border border-slate-700/50">
+    <ConfigSection className="config flex flex-col h-5/6 w-full justify-center items-center">
       <div className="flex flex-col border-2 border-slate-700">
         {props.levelConfig.map((row, rowIndex) => (
           <div className="flex" key={rowIndex}>
@@ -17,7 +17,7 @@ const AreaConfig = (props: Props) => {
           </div>
         ))}
       </div>
-    </div>
+    </ConfigSection>
   );
 };
 

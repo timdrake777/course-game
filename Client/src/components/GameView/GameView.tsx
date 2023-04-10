@@ -110,7 +110,7 @@ export const GameView = () => {
   }, [characterImage]);
 
   return (
-    <div ref={viewRef}>
+    <div ref={viewRef} className="w-1/2 h-full flex items-center justify-center">
       {levelConfig ? (
         <Stage height={levelConfig.height()} width={levelConfig.width()}>
           <Layer>
@@ -136,9 +136,11 @@ export const GameView = () => {
           </Layer>
         </Stage>
       ) : (
-        <div>
-          <p>Создайте уровень в /config</p>
-          <GameButton onClick={(e) => navigate("config")} func="ok" className="text-slate-700">Конфигурация</GameButton>
+        <div className="flex flex-col items-center justify-center gap-2">
+          <p className="text-lg font-bold">Создайте уровень в /config</p>
+          <GameButton onClick={(e) => navigate("config")} func="ok" className="text-slate-700">
+            Конфигурация
+          </GameButton>
         </div>
       )}
     </div>
