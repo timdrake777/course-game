@@ -1,7 +1,11 @@
+import Konva from "konva";
 import { Rect, Sprite } from "react-konva";
 import { ILevelConfig, IObstacle } from "../interfaces";
 import getTexture from "./getTexture";
-import { StageConfig } from "./constants";
+import { COIN_SPRITE_ANIMATIONS, StageConfig } from "./constants";
+
+import coin from "../assets/Items/coin.png";
+import React from "react";
 
 const obstacleSprites = (levelConfig: ILevelConfig | null) => {
   if (!levelConfig) return;
@@ -21,15 +25,34 @@ const obstacleSprites = (levelConfig: ILevelConfig | null) => {
           x={itemIndex * StageConfig.BG_ITEM_SIZE}
           y={rowIndex * StageConfig.BG_ITEM_SIZE}
           animation={"idle"}
-          animations={{idle: [0, 0, StageConfig.BG_ITEM_SIZE, StageConfig.BG_ITEM_SIZE]}}
+          animations={{ idle: [0, 0, StageConfig.BG_ITEM_SIZE, StageConfig.BG_ITEM_SIZE] }}
           image={image}
         />
       );
 
+      if (item === 9) {
+        image.src = coin;
+        sprite = (
+          <Sprite
+            ref={(node) => {
+              if (node && !node.isRunning()) node.start();
+            }}
+            key={`${rowIndex}-${itemIndex}`}
+            width={StageConfig.BG_ITEM_SIZE}
+            height={StageConfig.BG_ITEM_SIZE}
+            x={itemIndex * StageConfig.BG_ITEM_SIZE}
+            y={rowIndex * StageConfig.BG_ITEM_SIZE}
+            animation={"idle"}
+            animations={COIN_SPRITE_ANIMATIONS}
+            frameRate={7}
+            frameIndex={0}
+            image={image}
+          />
+        );
+      }
       spritesArray.push(sprite);
     });
   });
-
   return spritesArray;
 };
 

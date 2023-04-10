@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import floor from "../../../assets/ConfigTemplates/Floor.png";
 
@@ -17,7 +17,7 @@ const AreaItem = (props: Props) => {
   const [image, setImage] = useState<string>();
 
   const changeKey = () => {
-    if (areaKey + 1 > 8) {
+    if (areaKey + 1 > 9) {
       setAreaKey(0);
       return;
     }

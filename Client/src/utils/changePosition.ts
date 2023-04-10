@@ -1,6 +1,6 @@
 import { Sprite } from "konva/lib/shapes/Sprite";
 import { StateDispatch, IDirection, IDirectionSign, ILevelConfig, IPosition } from "../interfaces";
-import { CharacterConfig, StageConfig } from "./constants";
+import { CharacterConfig, OBSTACLES, StageConfig } from "./constants";
 
 const changePosition = (
   ref: React.RefObject<Sprite>,
@@ -30,7 +30,7 @@ const changePosition = (
     direction === direction4Condition &&
     nextPosition < levelConfig.width() &&
     nextPosition >= 0 &&
-    levelConfig.points[nextArrayPosition.y][nextArrayPosition.x] === 0;
+    !OBSTACLES.includes(levelConfig.points[nextArrayPosition.y][nextArrayPosition.x]);
 
   if (moveCondition("x")) {
     changePos = { x: nextPosition };
