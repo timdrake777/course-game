@@ -3,12 +3,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { Layer, Rect, Sprite, Stage } from "react-konva";
 import useImage from "use-image";
 import changePosition from "../../utils/gameViewActions/changePosition";
-import {
-  AnimationType,
-  CharacterConfig,
-  CHARACTER_SPRITE_ANIMATIONS,
-  StageConfig,
-} from "../../utils/constants";
+import { AnimationType, CharacterConfig, CHARACTER_SPRITE_ANIMATIONS } from "../../utils/constants";
 
 import BgImagePNG from "../../assets/Background/Floor.png";
 import characterPNG from "../../assets/Character/character.png";
@@ -24,6 +19,7 @@ import obstacleSprites from "../../utils/gameViewActions/obstacleSprites";
 import GameButton from "../Templates/GameButton";
 import { useNavigate } from "react-router";
 import coinAnimation from "../../utils/gameViewActions/coinAnimation";
+import EmptyConfig from "./EmptyConfig";
 
 export const GameView = () => {
   const navigate = useNavigate();
@@ -110,6 +106,8 @@ export const GameView = () => {
           let sprite = viewRef.current?.findOne(`#${response.id}`) as Konva.Sprite;
           if (sprite) {
             coinsCount.current += 1;
+            console.log(coinsCount.current === obstacles.coins);
+            
             coinAnimation(sprite, response);
           }
           break;
@@ -146,10 +144,14 @@ export const GameView = () => {
   }, [characterImage]);
 
   return (
-    <div className="w-1/2 h-full flex items-center justify-center">
+    <section className="w-1/2 h-full flex items-center justify-center">
       {levelConfig ? (
         <>
-          <GameButton onClick={(e) => navigate("config")} func="ok" className="absolute top-0 left-0 text-slate-700">
+          <GameButton
+            onClick={(e) => navigate("config")}
+            func="ok"
+            className="absolute top-0 left-0 text-slate-700"
+          >
             Конфигурация
           </GameButton>
           <Stage height={levelConfig.height()} width={levelConfig.width()} ref={viewRef}>
@@ -177,13 +179,8 @@ export const GameView = () => {
           </Stage>
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center gap-2">
-          <p className="text-lg font-bold">Создайте уровень в /config</p>
-          <GameButton onClick={(e) => navigate("config")} func="ok" className="text-slate-700">
-            Конфигурация
-          </GameButton>
-        </div>
+        <EmptyConfig navigate={navigate}/>
       )}
-    </div>
+    </section>
   );
 };
