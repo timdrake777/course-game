@@ -15,9 +15,7 @@ export enum AnimationType {
 }
 
 export enum StageConfig {
-  BG_ITEM_SIZE = 32,
-  STAGE_HEIGHT = window.innerHeight,
-  STAGE_WIDTH = BG_ITEM_SIZE * 12,
+  BG_ITEM_SIZE = 32
 }
 
 export const OBSTACLES = [1, 2, 3, 4, 5, 6, 7, 8]
