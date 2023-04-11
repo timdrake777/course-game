@@ -1,7 +1,7 @@
 export type StateDispatch<T = any> = React.Dispatch<React.SetStateAction<T>>;
 export type IDirectionSign = -1 | 1;
 export type IDirection = "x" | "y";
-export type IAnimationType = "idle" | "down" | "up" | "right" | "left";
+export type IAnimationType = "idle" | "down" | "up" | "right" | "left" | "dead";
 
 export interface IConfigHandler {
   key: number;
@@ -24,10 +24,20 @@ export interface IPosition {
   y: number;
 }
 
-export type IObstacle = JSX.Element;
-export interface ICodeBlocks {
-    instanceName: string,
-    instanceMethod: string,
-    instanceValue: string,
+export interface IPositionResponse {
+  code: number;
+  id: string;
+  direction?: ICoinDirection;
 }
 
+export type ICoinDirection = "<" | ">" | "^" | "v";
+
+export interface IObstacles {
+  elements: JSX.Element[];
+  coins: number;
+}
+export interface ICodeBlocks {
+  instanceName: string;
+  instanceMethod: string;
+  instanceValue: string;
+}

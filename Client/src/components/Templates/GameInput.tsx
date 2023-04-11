@@ -19,10 +19,7 @@ const GameInput = ({
   const [currentValue, setCurrentValue] = useState<number>(Number.parseInt(`${value}`));
 
   const handleValue = (e: any) => {
-    onChange && onChange(e);
-
     let targetValue = Number.parseInt(e.target.value as string);
-
     if (
       (isNaN(targetValue) ||
         (maxValueGame && targetValue > maxValueGame) ||
@@ -34,8 +31,8 @@ const GameInput = ({
       else setCurrentValue(currentValue);
       return;
     }
-
     setCurrentValue(targetValue);
+    onChange && onChange(e);
   };
 
   useEffect(() => {

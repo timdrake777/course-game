@@ -1,16 +1,16 @@
 import Konva from "konva";
 import { Rect, Sprite } from "react-konva";
-import { ILevelConfig, IObstacle } from "../interfaces";
-import getTexture from "./getTexture";
-import { COIN_SPRITE_ANIMATIONS, StageConfig } from "./constants";
+import { ILevelConfig, IObstacles } from "../../interfaces";
+import getTexture from "../getTexture";
+import { COIN_SPRITE_ANIMATIONS, StageConfig } from "../constants";
 
-import coin from "../assets/Items/coin.png";
-import React from "react";
+import coin from "../../assets/Items/coin.png";
 
-const obstacleSprites = (levelConfig: ILevelConfig | null) => {
-  if (!levelConfig) return;
+const obstacleSprites = (levelConfig: ILevelConfig | null): IObstacles => {
+  let sprites: IObstacles = { elements: [], coins: 0 };
+  
+  if (!levelConfig) return sprites;
 
-  let spritesArray: IObstacle[] = [];
   levelConfig.points.forEach((row, rowIndex) => {
     row.forEach((item, itemIndex) => {
       if (item === 0) return;
@@ -32,11 +32,13 @@ const obstacleSprites = (levelConfig: ILevelConfig | null) => {
 
       if (item === 9) {
         image.src = coin;
+        sprites.coins += 1;
         sprite = (
           <Sprite
             ref={(node) => {
               if (node && !node.isRunning()) node.start();
             }}
+            id={`${rowIndex}-${itemIndex}`}
             key={`${rowIndex}-${itemIndex}`}
             width={StageConfig.BG_ITEM_SIZE}
             height={StageConfig.BG_ITEM_SIZE}
@@ -44,16 +46,16 @@ const obstacleSprites = (levelConfig: ILevelConfig | null) => {
             y={rowIndex * StageConfig.BG_ITEM_SIZE}
             animation={"idle"}
             animations={COIN_SPRITE_ANIMATIONS}
-            frameRate={7}
+            frameRate={12}
             frameIndex={0}
             image={image}
           />
         );
       }
-      spritesArray.push(sprite);
+      sprites.elements.push(sprite);
     });
   });
-  return spritesArray;
+  return sprites;
 };
 
 export default obstacleSprites;

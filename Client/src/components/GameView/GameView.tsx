@@ -2,7 +2,7 @@ import Konva from "konva";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Layer, Rect, Sprite, Stage } from "react-konva";
 import useImage from "use-image";
-import changePosition from "../../utils/changePosition";
+import changePosition from "../../utils/gameViewActions/changePosition";
 import {
   AnimationType,
   CharacterConfig,
@@ -12,19 +12,27 @@ import {
 
 import BgImagePNG from "../../assets/Background/Floor.png";
 import characterPNG from "../../assets/Character/character.png";
-import { IAnimationType, ILevelConfig, IObstacle, IPosition } from "../../interfaces";
+import {
+  IAnimationType,
+  ILevelConfig,
+  IObstacles,
+  IPosition,
+  IPositionResponse,
+} from "../../interfaces";
 import storageActions from "../../utils/storageActions";
-import obstacleSprites from "../../utils/obstacleSprites";
+import obstacleSprites from "../../utils/gameViewActions/obstacleSprites";
 import GameButton from "../Templates/GameButton";
 import { useNavigate } from "react-router";
+import coinAnimation from "../../utils/gameViewActions/coinAnimation";
 
 export const GameView = () => {
   const navigate = useNavigate();
 
-  const viewRef = useRef<HTMLDivElement>(null);
+  const viewRef = useRef<Konva.Stage>(null);
   const characterRef = useRef<Konva.Sprite>(null);
   const keyUpRef = useRef<boolean>(false);
   const keyDownTimeoutRef = useRef<number>();
+  const coinsCount = useRef<number>(0);
 
   const [posX, setPosX] = useState<number>(CharacterConfig.START_POSITION_X);
   const [posY, setPosY] = useState<number>(CharacterConfig.START_POSITION_Y);
@@ -32,7 +40,7 @@ export const GameView = () => {
   const [levelConfig, setLevelConfig] = useState<ILevelConfig | null>(
     storageActions.getLevelConfig()
   );
-  const obstacles = useMemo(() => obstacleSprites(levelConfig), [levelConfig]);
+  const obstacles: IObstacles = useMemo(() => obstacleSprites(levelConfig), [levelConfig]);
 
   const [bgImage] = useImage(BgImagePNG);
   const [characterImage] = useImage(characterPNG);
@@ -59,32 +67,52 @@ export const GameView = () => {
         y: posY,
       };
 
+      let response: IPositionResponse = { code: 0, id: "" };
+
       switch (key) {
         case "ArrowUp":
           event.preventDefault();
           keyDownTimeoutRef.current = arrowTimeout();
-          changePosition(characterRef, absolutePosition, setPosY, "y", -1, levelConfig);
+          response = changePosition(characterRef, absolutePosition, setPosY, "y", -1, levelConfig);
           setAnimationType(AnimationType.UP);
           break;
         case "ArrowDown":
           event.preventDefault();
           keyDownTimeoutRef.current = arrowTimeout();
-          changePosition(characterRef, absolutePosition, setPosY, "y", 1, levelConfig);
+          response = changePosition(characterRef, absolutePosition, setPosY, "y", 1, levelConfig);
           setAnimationType(AnimationType.DOWN);
           break;
         case "ArrowLeft":
           event.preventDefault();
           keyDownTimeoutRef.current = arrowTimeout();
-          changePosition(characterRef, absolutePosition, setPosX, "x", -1, levelConfig);
+          response = changePosition(characterRef, absolutePosition, setPosX, "x", -1, levelConfig);
           setAnimationType(AnimationType.LEFT);
           break;
         case "ArrowRight":
           event.preventDefault();
           keyDownTimeoutRef.current = arrowTimeout();
-          changePosition(characterRef, absolutePosition, setPosX, "x", 1, levelConfig);
+          response = changePosition(characterRef, absolutePosition, setPosX, "x", 1, levelConfig);
           setAnimationType(AnimationType.RIGHT);
           break;
 
+        default:
+          break;
+      }
+
+      switch (response.code) {
+        case 1:
+          setTimeout(() => setAnimationType(AnimationType.DEAD), 100);
+          removeKeyEvents();
+          clearTimeout(keyDownTimeoutRef.current);
+          setTimeout(() => characterRef.current?.stop(), 670);
+          break;
+        case 2:
+          let sprite = viewRef.current?.findOne(`#${response.id}`) as Konva.Sprite;
+          if (sprite) {
+            coinsCount.current += 1;
+            coinAnimation(sprite, response);
+          }
+          break;
         default:
           break;
       }
@@ -96,12 +124,20 @@ export const GameView = () => {
     keyUpRef.current = true;
   };
 
-  useEffect(() => {
+  const addKeyEvents = () => {
     window.addEventListener("keydown", handleUserKeyPress);
     window.addEventListener("keyup", handleUserKeyUp);
+  };
+
+  const removeKeyEvents = () => {
+    window.removeEventListener("keydown", handleUserKeyPress);
+    window.removeEventListener("keyup", handleUserKeyUp);
+  };
+
+  useEffect(() => {
+    addKeyEvents();
     return () => {
-      window.removeEventListener("keydown", handleUserKeyPress);
-      window.removeEventListener("keyup", handleUserKeyUp);
+      removeKeyEvents();
     };
   }, [handleUserKeyPress]);
 
@@ -110,16 +146,16 @@ export const GameView = () => {
   }, [characterImage]);
 
   return (
-    <div ref={viewRef} className="w-1/2 h-full flex items-center justify-center">
+    <div className="w-1/2 h-full flex items-center justify-center">
       {levelConfig ? (
-        <Stage height={levelConfig.height()} width={levelConfig.width()}>
+        <Stage height={levelConfig.height()} width={levelConfig.width()} ref={viewRef}>
           <Layer>
             <Rect
               fillPatternImage={bgImage as HTMLImageElement}
               width={levelConfig.width()}
               height={levelConfig.height()}
             />
-            {obstacles}
+            {obstacles?.elements}
             <Sprite
               ref={characterRef}
               width={CharacterConfig.CHARACTER_SIZE}
