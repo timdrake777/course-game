@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React from "react";
 
-interface Props extends React.HTMLAttributes<HTMLDivElement> {}
+interface Props extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {}
 
 const ConfigSection = ({ children, className, ...props }: Props) => {
   return (

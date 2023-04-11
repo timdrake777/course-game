@@ -7,21 +7,25 @@ const coinAnimation = (sprite: Konva.Sprite, response: IPositionResponse) => {
   switch (response.direction) {
     case "<":
       sprite.to({
+        duration: 0.2,
         x: spritePosition.x + 16,
       });
       break;
     case ">":
       sprite.to({
+        duration: 0.2,
         x: spritePosition.x - 16,
       });
       break;
     case "^":
       sprite.to({
+        duration: 0.2,
         y: spritePosition.y + 16,
       });
       break;
     case "v":
       sprite.to({
+        duration: 0.2,
         y: spritePosition.y - 16,
       });
       break;

@@ -1,7 +1,8 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 
-interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
+interface Props
+  extends React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
   header: string;
   maxValueGame?: number;
   minValueGame?: number;

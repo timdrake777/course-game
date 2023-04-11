@@ -30,7 +30,11 @@ const directionFromCoin = (
  * @param direction - Направление персонажа
  * @param directionSign - Знак для определения движения (вперед - [1], назад - [-1])
  * @param levelConfig - Массив препятствий
- * @returns (0 - Перемещение на пустую клетку | 1 - Столкновение | 2 - Поднятие монетки) && id
+ * @returns   [{
+ *              code: 0 - Перемещение на пустую клетку | 1 - Столкновение | 2 - Поднятие монетки,
+ *              id: number,
+ *              direction?: string
+ *            }]
  */
 
 const changePosition = (

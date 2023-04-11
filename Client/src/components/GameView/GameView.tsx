@@ -148,29 +148,34 @@ export const GameView = () => {
   return (
     <div className="w-1/2 h-full flex items-center justify-center">
       {levelConfig ? (
-        <Stage height={levelConfig.height()} width={levelConfig.width()} ref={viewRef}>
-          <Layer>
-            <Rect
-              fillPatternImage={bgImage as HTMLImageElement}
-              width={levelConfig.width()}
-              height={levelConfig.height()}
-            />
-            {obstacles?.elements}
-            <Sprite
-              ref={characterRef}
-              width={CharacterConfig.CHARACTER_SIZE}
-              height={CharacterConfig.CHARACTER_SIZE}
-              x={CharacterConfig.START_POSITION_X}
-              y={CharacterConfig.START_POSITION_Y}
-              scale={{ x: 0.65, y: 0.65 }}
-              image={characterImage as HTMLImageElement}
-              animations={CHARACTER_SPRITE_ANIMATIONS}
-              frameRate={6}
-              frameIndex={0}
-              animation={animationType}
-            />
-          </Layer>
-        </Stage>
+        <>
+          <GameButton onClick={(e) => navigate("config")} func="ok" className="absolute top-0 left-0 text-slate-700">
+            Конфигурация
+          </GameButton>
+          <Stage height={levelConfig.height()} width={levelConfig.width()} ref={viewRef}>
+            <Layer>
+              <Rect
+                fillPatternImage={bgImage as HTMLImageElement}
+                width={levelConfig.width()}
+                height={levelConfig.height()}
+              />
+              {obstacles?.elements}
+              <Sprite
+                ref={characterRef}
+                width={CharacterConfig.CHARACTER_SIZE}
+                height={CharacterConfig.CHARACTER_SIZE}
+                x={CharacterConfig.START_POSITION_X}
+                y={CharacterConfig.START_POSITION_Y}
+                scale={{ x: 0.65, y: 0.65 }}
+                image={characterImage as HTMLImageElement}
+                animations={CHARACTER_SPRITE_ANIMATIONS}
+                frameRate={6}
+                frameIndex={0}
+                animation={animationType}
+              />
+            </Layer>
+          </Stage>
+        </>
       ) : (
         <div className="flex flex-col items-center justify-center gap-2">
           <p className="text-lg font-bold">Создайте уровень в /config</p>
