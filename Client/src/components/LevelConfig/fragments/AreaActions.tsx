@@ -5,6 +5,7 @@ import GameInput from "../../Templates/GameInput";
 import { IAreaSize } from "../../../interfaces";
 import ConfigSection from "../../Templates/ConfigSection";
 import classNames from "classnames";
+import { useNavigate } from "react-router";
 
 interface Props {
   changeAreaSize: (height: number, width: number) => void;
@@ -15,9 +16,7 @@ interface Props {
 const AreaActions = (props: Props) => {
   const { saveAreaValues } = useContext(LevelContextValues);
 
-  const [showSaveMessage, setShowSaveMessage] = useState<JSX.Element>(<></>);
-
-  const showTimer = useRef<number>(0);
+  const navigate = useNavigate();
 
   const handlerSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -29,38 +28,16 @@ const AreaActions = (props: Props) => {
   };
 
   const handlerSave = () => {
-    if (showTimer.current > 0) {
-      setShowSaveMessage(<></>);
-      clearTimeout(showTimer.current);
-      showTimer.current = 0;
-    }
-
-    showTimer.current = setTimeout(() => {
-      setShowSaveMessage(<></>);
-      showTimer.current = 0;
-    }, 2000);
-
-    setShowSaveMessage(
-      <p
-        key={showTimer.current}
-        className="absolute opacity-0 select-none -top-10 left-6 text-sm font-normal text-emerald-400 animate-btn"
-      >
-        Шаблон сохранен
-      </p>
-    );
-
     saveAreaValues();
+    navigate("/");
   };
 
   return (
     <div className="buttons flex h-1/6 w-full gap-8">
       <ConfigSection className="w-1/2 flex items-center justify-around">
-        <div className="relative">
-          {showSaveMessage}
-          <GameButton onClick={handlerSave} func="ok" className="relative bg-slate-800/70 z-10">
-            Сохранить шаблон
-          </GameButton>
-        </div>
+        <GameButton onClick={handlerSave} func="ok" className="relative bg-slate-800/70 z-10">
+          Сохранить шаблон
+        </GameButton>
 
         <GameButton onClick={props.deleteConfig} func="alert">
           Удалить шаблон

@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React from "react";
 
-interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface Props extends React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> {
   func?: "ok" | "alert";
 }
 

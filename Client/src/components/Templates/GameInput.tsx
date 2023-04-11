@@ -1,7 +1,8 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 
-interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
+interface Props
+  extends React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
   header: string;
   maxValueGame?: number;
   minValueGame?: number;
@@ -19,10 +20,7 @@ const GameInput = ({
   const [currentValue, setCurrentValue] = useState<number>(Number.parseInt(`${value}`));
 
   const handleValue = (e: any) => {
-    onChange && onChange(e);
-
     let targetValue = Number.parseInt(e.target.value as string);
-
     if (
       (isNaN(targetValue) ||
         (maxValueGame && targetValue > maxValueGame) ||
@@ -34,8 +32,8 @@ const GameInput = ({
       else setCurrentValue(currentValue);
       return;
     }
-
     setCurrentValue(targetValue);
+    onChange && onChange(e);
   };
 
   useEffect(() => {
