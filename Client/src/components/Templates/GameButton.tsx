@@ -14,6 +14,7 @@ const GameButton = ({ children, className, ...props }: Props) => {
         {
           "border-emerald-400 hover:bg-emerald-400 hover:drop-shadow-button-ok focus:bg-emerald-400 focus:drop-shadow-button-ok": props.func === "ok",
           "border-red-600 hover:bg-red-600 hover:drop-shadow-button-alert focus:bg-red-600 focus:drop-shadow-button-alert ": props.func === "alert",
+          "border-slate-200 hover:bg-slate-200 hover:drop-shadow-button-default focus:bg-slate-200 focus:drop-shadow-button-default ": !props.func,
         }
       )}
       {...props}
