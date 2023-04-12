@@ -13,6 +13,7 @@ export default {
       dropShadow: {
         "button-ok": "0 0 6px rgba(52, 211, 153, 0.8)",
         "button-alert": "0 0 6px rgba(220, 38, 38, 0.9)",
+        "button-default": "0 0 6px rgba(226, 232, 240, 0.9)",
       },
 
       keyframes: {
