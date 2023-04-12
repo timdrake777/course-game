@@ -20,6 +20,8 @@ import GameButton from "../Templates/GameButton";
 import { useNavigate } from "react-router";
 import coinAnimation from "../../utils/gameViewActions/coinAnimation";
 import EmptyConfig from "./EmptyConfig";
+import coinSound from "../../assets/Audio/coin.mp3";
+import deathSound from "../../assets/Audio/death.mp3";
 
 export const GameView = () => {
   const navigate = useNavigate();
@@ -40,6 +42,8 @@ export const GameView = () => {
 
   const [bgImage] = useImage(BgImagePNG);
   const [characterImage] = useImage(characterPNG);
+  const [coinGetSound] = useState(new Audio(coinSound));
+  const [deadSound] = useState(new Audio(deathSound));
 
   const arrowTimeout = () =>
     setTimeout(() => {
@@ -99,17 +103,20 @@ export const GameView = () => {
         case 1:
           setTimeout(() => setAnimationType(AnimationType.DEAD), 100);
           removeKeyEvents();
+          deadSound.play();
           clearTimeout(keyDownTimeoutRef.current);
           setTimeout(() => characterRef.current?.stop(), 670);
           break;
         case 2:
           let sprite = viewRef.current?.findOne(`#${response.id}`) as Konva.Sprite;
-          if (sprite) {
-            coinsCount.current += 1;
-            console.log(coinsCount.current === obstacles.coins);
-            
-            coinAnimation(sprite, response);
-          }
+
+          if (!sprite) break;
+
+          coinGetSound.pause();
+          coinGetSound.currentTime = 0;
+          coinGetSound.play();
+          coinsCount.current += 1;
+          coinAnimation(sprite, response);
           break;
         default:
           break;
@@ -179,7 +186,7 @@ export const GameView = () => {
           </Stage>
         </>
       ) : (
-        <EmptyConfig navigate={navigate}/>
+        <EmptyConfig navigate={navigate} />
       )}
     </section>
   );
