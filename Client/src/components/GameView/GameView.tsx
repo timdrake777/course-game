@@ -2,6 +2,7 @@ import Konva from "konva";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Layer, Rect, Sprite, Stage } from "react-konva";
 import { useNavigate } from "react-router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useImage from "use-image";
 
 import {
@@ -18,6 +19,7 @@ import changePosition from "../../utils/gameViewActions/changePosition";
 import { AnimationType, CharacterConfig, CHARACTER_SPRITE_ANIMATIONS } from "../../utils/constants";
 import GameButton from "../Templates/GameButton";
 import EmptyConfig from "./fragments/EmptyConfig";
+import CoinsCounter from "./fragments/CoinsCounter";
 
 import coinSfx from "../../assets/Audio/coin.mp3";
 import deathSfx from "../../assets/Audio/death.mp3";
@@ -25,8 +27,8 @@ import levelCompleteSfx from "../../assets/Audio/levelComplete.wav";
 import BgImagePNG from "../../assets/Background/Floor.png";
 import characterPNG from "../../assets/Character/character.png";
 
-import styles from "./GameView.module.scss"
-import CoinsCounter from "./fragments/CoinsCounter";
+import styles from "./GameView.module.scss";
+import { faWrench } from "@fortawesome/free-solid-svg-icons";
 
 export const GameView = () => {
   const navigate = useNavigate();
@@ -132,7 +134,7 @@ export const GameView = () => {
           coinGetSound.currentTime = 0;
           coinGetSound.play();
           coinAnimation(sprite, response);
-          setCoinsCount(currentCoinsCount)
+          setCoinsCount(currentCoinsCount);
           break;
         default:
           break;
@@ -167,17 +169,22 @@ export const GameView = () => {
   }, [characterImage]);
 
   return (
-    <section className={"w-1/2 h-full flex items-center justify-center relative " + styles.gameViewSection} >
+    <section
+      className={"w-1/2 h-full flex items-center justify-center relative " + styles.gameViewSection}
+    >
       {levelConfig ? (
         <>
-          <CoinsCounter currentCoinsCount={coinsCount} allCoins={obstacles.coins}/>
-          {/* <GameButton
-            onClick={(e) => navigate("config")}
-            func="ok"
-            className="absolute top-0 left-0 text-slate-700"
-          >
-            Конфигурация
-          </GameButton> */}
+          <div className="py-3 px-4 w-full absolute top-0 left-0 flex justify-between items-center">
+            <a
+              href="/config"
+              className="text-slate-200 cursor-pointer hover:text-slate-400 transition-colors"
+              title="Конфигурация"
+            >
+              <FontAwesomeIcon icon={faWrench} size="lg" />
+            </a>
+            <CoinsCounter currentCoinsCount={coinsCount} allCoins={obstacles.coins} />
+          </div>
+
           <Stage height={levelConfig.height()} width={levelConfig.width()} ref={viewRef}>
             <Layer>
               <Rect
