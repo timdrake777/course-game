@@ -67,8 +67,6 @@ export const GameView = () => {
       }
     }, 500);
 
-  
-
   const playCompleteSound = () => {
     soundActions.playSound(levelCompleteSound);
     setAnimationType(AnimationType.IDLE);
@@ -130,8 +128,7 @@ export const GameView = () => {
           soundActions.playSound(deathSound);
           break;
         case 2:
-          let currentCoinsCount = coinsCount;
-          currentCoinsCount += 1;
+          let currentCoinsCount = coinsCount + 1;
           let sprite = viewRef.current?.findOne(`#${response.id}`) as Konva.Sprite;
 
           if (!sprite) break;
@@ -161,7 +158,6 @@ export const GameView = () => {
       x: CharacterConfig.START_POSITION_X,
       y: CharacterConfig.START_POSITION_Y,
     });
-
     characterRef.current?.start();
     keyDownTimeoutRef.current = 0;
     soundActions.stopSound(levelCompleteSound);
@@ -242,7 +238,7 @@ export const GameView = () => {
                   scale={{ x: 0.65, y: 0.65 }}
                   image={characterImage as HTMLImageElement}
                   animations={CHARACTER_SPRITE_ANIMATIONS}
-                  frameRate={6}
+                  frameRate={7}
                   frameIndex={0}
                   animation={animationType}
                 />
