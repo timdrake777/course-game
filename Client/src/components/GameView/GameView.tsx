@@ -2,11 +2,10 @@ import Konva from "konva";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Layer, Rect, Sprite, Stage } from "react-konva";
 import { useNavigate } from "react-router";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGear } from "@fortawesome/free-solid-svg-icons";
 import useImage from "use-image";
 
 import {
+  GameStates,
   IAnimationType,
   ILevelConfig,
   IObstacles,
@@ -28,7 +27,10 @@ import BgImagePNG from "../../assets/Background/Floor.png";
 import characterPNG from "../../assets/Character/character.png";
 
 import styles from "./GameView.module.scss";
-import { faWrench } from "@fortawesome/free-solid-svg-icons";
+import GameViewSettings from "./fragments/GameViewSettings";
+import LevelFailed from "./fragments/LevelFailed";
+import LevelComplete from "./fragments/LevelComplete";
+import soundActions from "../../utils/gameViewActions/soundActions";
 
 export const GameView = () => {
   const navigate = useNavigate();
@@ -42,8 +44,12 @@ export const GameView = () => {
   const [posY, setPosY] = useState<number>(CharacterConfig.START_POSITION_Y);
   const [animationType, setAnimationType] = useState<IAnimationType>(AnimationType.IDLE);
   const [coinsCount, setCoinsCount] = useState<number>(0);
+  const [gameState, setGameState] = useState<GameStates>(1);
+  const [gameOverView, setGameOverView] = useState<JSX.Element | null>(null);
+  const [levelConfig, setLevelConfig] = useState<ILevelConfig | null>(
+    storageActions.getLevelConfig()
+  );
 
-  const levelConfig = useMemo<ILevelConfig | null>(() => storageActions.getLevelConfig(), []);
   const obstacles: IObstacles = useMemo(() => obstacleSprites(levelConfig), [levelConfig]);
 
   const [bgImage] = useImage(BgImagePNG);
@@ -60,6 +66,14 @@ export const GameView = () => {
         keyUpRef.current = false;
       }
     }, 500);
+
+  
+
+  const playCompleteSound = () => {
+    soundActions.playSound(levelCompleteSound);
+    setAnimationType(AnimationType.IDLE);
+    coinGetSound.removeEventListener("ended", playCompleteSound);
+  };
 
   const handleUserKeyPress = useCallback(
     (event: KeyboardEvent) => {
@@ -109,10 +123,11 @@ export const GameView = () => {
       switch (response.code) {
         case 1:
           setTimeout(() => setAnimationType(AnimationType.DEAD), 100);
-          removeKeyEvents();
-          deathSound.play();
-          clearTimeout(keyDownTimeoutRef.current);
-          setTimeout(() => characterRef.current?.stop(), 670);
+          setTimeout(() => {
+            characterRef.current?.stop();
+          }, 670);
+          setGameState(0);
+          soundActions.playSound(deathSound);
           break;
         case 2:
           let currentCoinsCount = coinsCount;
@@ -122,17 +137,10 @@ export const GameView = () => {
           if (!sprite) break;
 
           if (currentCoinsCount === obstacles.coins) {
-            removeKeyEvents();
-            clearTimeout(keyDownTimeoutRef.current);
-            coinGetSound.addEventListener("ended", () => {
-              levelCompleteSound.play();
-              setAnimationType(AnimationType.IDLE);
-            });
+            setGameState(2);
+            coinGetSound.addEventListener("ended", playCompleteSound);
           }
-
-          coinGetSound.pause();
-          coinGetSound.currentTime = 0;
-          coinGetSound.play();
+          soundActions.playSound(coinGetSound);
           coinAnimation(sprite, response);
           setCoinsCount(currentCoinsCount);
           break;
@@ -140,11 +148,48 @@ export const GameView = () => {
           break;
       }
     },
-    [posX, posY]
+    [posX, posY, levelConfig]
   );
 
   const handleUserKeyUp = () => {
     keyUpRef.current = true;
+  };
+
+  const restartGame = () => {
+    characterRef.current?.to({
+      duration: 0,
+      x: CharacterConfig.START_POSITION_X,
+      y: CharacterConfig.START_POSITION_Y,
+    });
+
+    characterRef.current?.start();
+    keyDownTimeoutRef.current = 0;
+    soundActions.stopSound(levelCompleteSound);
+    soundActions.stopSound(deathSound);
+    setCoinsCount(0);
+    setPosX(CharacterConfig.START_POSITION_X);
+    setPosY(CharacterConfig.START_POSITION_Y);
+    setAnimationType(AnimationType.IDLE);
+    setGameOverView(null);
+    setGameState(1);
+    setLevelConfig(storageActions.getLevelConfig());
+  };
+
+  const changeGameState = () => {
+    if (gameState === 1) {
+      addKeyEvents();
+      return;
+    }
+
+    clearTimeout(keyDownTimeoutRef.current);
+    if (gameState === 0) {
+      setTimeout(() => setGameOverView(<LevelFailed restartGame={restartGame} />), 300);
+      return;
+    }
+    if (gameState === 2) {
+      setTimeout(() => setGameOverView(<LevelComplete restartGame={restartGame} />), 400);
+      return;
+    }
   };
 
   const addKeyEvents = () => {
@@ -158,11 +203,11 @@ export const GameView = () => {
   };
 
   useEffect(() => {
-    addKeyEvents();
+    changeGameState();
     return () => {
       removeKeyEvents();
     };
-  }, [handleUserKeyPress]);
+  }, [handleUserKeyPress, gameState]);
 
   useLayoutEffect(() => {
     characterRef.current?.start();
@@ -175,39 +220,35 @@ export const GameView = () => {
       {levelConfig ? (
         <>
           <div className="py-3 px-4 w-full absolute top-0 left-0 flex justify-between items-center">
-            <a
-              href="/config"
-              className="text-zinc-200 cursor-pointer hover:text-zinc-400 transition-colors"
-              title="Конфигурация"
-            >
-              <FontAwesomeIcon icon={faGear} size="lg" />
-            </a>
+            <GameViewSettings />
             <CoinsCounter currentCoinsCount={coinsCount} allCoins={obstacles.coins} />
           </div>
-
-          <Stage height={levelConfig.height()} width={levelConfig.width()} ref={viewRef}>
-            <Layer>
-              <Rect
-                fillPatternImage={bgImage as HTMLImageElement}
-                width={levelConfig.width()}
-                height={levelConfig.height()}
-              />
-              {obstacles?.elements}
-              <Sprite
-                ref={characterRef}
-                width={CharacterConfig.CHARACTER_SIZE}
-                height={CharacterConfig.CHARACTER_SIZE}
-                x={CharacterConfig.START_POSITION_X}
-                y={CharacterConfig.START_POSITION_Y}
-                scale={{ x: 0.65, y: 0.65 }}
-                image={characterImage as HTMLImageElement}
-                animations={CHARACTER_SPRITE_ANIMATIONS}
-                frameRate={6}
-                frameIndex={0}
-                animation={animationType}
-              />
-            </Layer>
-          </Stage>
+          <div className="stage relative">
+            {gameOverView}
+            <Stage height={levelConfig.height()} width={levelConfig.width()} ref={viewRef}>
+              <Layer>
+                <Rect
+                  fillPatternImage={bgImage as HTMLImageElement}
+                  width={levelConfig.width()}
+                  height={levelConfig.height()}
+                />
+                {obstacles?.elements}
+                <Sprite
+                  ref={characterRef}
+                  width={CharacterConfig.CHARACTER_SIZE}
+                  height={CharacterConfig.CHARACTER_SIZE}
+                  x={CharacterConfig.START_POSITION_X}
+                  y={CharacterConfig.START_POSITION_Y}
+                  scale={{ x: 0.65, y: 0.65 }}
+                  image={characterImage as HTMLImageElement}
+                  animations={CHARACTER_SPRITE_ANIMATIONS}
+                  frameRate={6}
+                  frameIndex={0}
+                  animation={animationType}
+                />
+              </Layer>
+            </Stage>
+          </div>
         </>
       ) : (
         <EmptyConfig navigate={navigate} />

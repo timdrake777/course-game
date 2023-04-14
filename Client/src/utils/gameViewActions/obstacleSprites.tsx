@@ -6,6 +6,15 @@ import { COIN_SPRITE_ANIMATIONS, StageConfig } from "../constants";
 
 import coin from "../../assets/Items/coin.png";
 
+function* generKey() {
+  let key = 0;
+  while (true) {
+    key++;
+    yield key
+  }
+}
+const generator = generKey();
+
 const obstacleSprites = (levelConfig: ILevelConfig | null): IObstacles => {
   let sprites: IObstacles = { elements: [], coins: 0 };
   
@@ -19,7 +28,7 @@ const obstacleSprites = (levelConfig: ILevelConfig | null): IObstacles => {
       image.src = getTexture(item);
       let sprite = (
         <Sprite
-          key={`${rowIndex}-${itemIndex}`}
+          key={`${rowIndex}-${itemIndex}-${generator.next().value}`}
           width={StageConfig.BG_ITEM_SIZE}
           height={StageConfig.BG_ITEM_SIZE}
           x={itemIndex * StageConfig.BG_ITEM_SIZE}
@@ -39,7 +48,7 @@ const obstacleSprites = (levelConfig: ILevelConfig | null): IObstacles => {
               if (node && !node.isRunning()) node.start();
             }}
             id={`${rowIndex}-${itemIndex}`}
-            key={`${rowIndex}-${itemIndex}`}
+            key={`${rowIndex}-${itemIndex}-${generator.next().value}`}
             width={StageConfig.BG_ITEM_SIZE}
             height={StageConfig.BG_ITEM_SIZE}
             x={itemIndex * StageConfig.BG_ITEM_SIZE}
