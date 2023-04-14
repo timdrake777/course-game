@@ -28,6 +28,7 @@ import BgImagePNG from "../../assets/Background/Floor.png";
 import characterPNG from "../../assets/Character/character.png";
 
 import styles from "./GameView.module.scss";
+import { faWrench } from "@fortawesome/free-solid-svg-icons";
 
 export const GameView = () => {
   const navigate = useNavigate();
