@@ -22,10 +22,20 @@ export default {
           "20%": { opacity: "1", top: -27 },
           "100%": { opacity: "0"},
         },
+        "opacity": {
+          "0%": {opacity: "0"},
+          "100%": {opacity: '1'}
+        },
+        "topDown": {
+          "0%": {transform: "translateY(-50px)"},
+          "100%": {transform: "translateY(0)"}
+        }
       },
 
       animation: {
         "btn": "newMessage 2s ease-in-out",
+        "opacity": "opacity 700ms ease-in-out",
+        "top-down": "topDown 500ms ease-in-out",
       },
 
       

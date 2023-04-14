@@ -2,6 +2,11 @@ export type StateDispatch<T = any> = React.Dispatch<React.SetStateAction<T>>;
 export type IDirectionSign = -1 | 1;
 export type IDirection = "x" | "y";
 export type IAnimationType = "idle" | "down" | "up" | "right" | "left" | "dead";
+/**
+ * 0 - Проигрыш, 1 - старт, 2 - победа
+ */
+export type GameStates = 0 | 1 | 2;
+export type ICoinDirection = "<" | ">" | "^" | "v";
 
 export interface IConfigHandler {
   key: number;
@@ -29,8 +34,6 @@ export interface IPositionResponse {
   id: string;
   direction?: ICoinDirection;
 }
-
-export type ICoinDirection = "<" | ">" | "^" | "v";
 
 export interface IObstacles {
   elements: JSX.Element[];
