@@ -3,6 +3,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { Layer, Rect, Sprite, Stage } from "react-konva";
 import { useNavigate } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGear } from "@fortawesome/free-solid-svg-icons";
 import useImage from "use-image";
 
 import {
@@ -17,7 +18,6 @@ import coinAnimation from "../../utils/gameViewActions/coinAnimation";
 import obstacleSprites from "../../utils/gameViewActions/obstacleSprites";
 import changePosition from "../../utils/gameViewActions/changePosition";
 import { AnimationType, CharacterConfig, CHARACTER_SPRITE_ANIMATIONS } from "../../utils/constants";
-import GameButton from "../Templates/GameButton";
 import EmptyConfig from "./fragments/EmptyConfig";
 import CoinsCounter from "./fragments/CoinsCounter";
 
@@ -28,7 +28,6 @@ import BgImagePNG from "../../assets/Background/Floor.png";
 import characterPNG from "../../assets/Character/character.png";
 
 import styles from "./GameView.module.scss";
-import { faWrench } from "@fortawesome/free-solid-svg-icons";
 
 export const GameView = () => {
   const navigate = useNavigate();
@@ -177,10 +176,10 @@ export const GameView = () => {
           <div className="py-3 px-4 w-full absolute top-0 left-0 flex justify-between items-center">
             <a
               href="/config"
-              className="text-slate-200 cursor-pointer hover:text-slate-400 transition-colors"
+              className="text-zinc-200 cursor-pointer hover:text-zinc-400 transition-colors"
               title="Конфигурация"
             >
-              <FontAwesomeIcon icon={faWrench} size="lg" />
+              <FontAwesomeIcon icon={faGear} size="lg" />
             </a>
             <CoinsCounter currentCoinsCount={coinsCount} allCoins={obstacles.coins} />
           </div>

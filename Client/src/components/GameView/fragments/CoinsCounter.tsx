@@ -17,7 +17,7 @@ const CoinsCounter = ({allCoins, currentCoinsCount,...props}: Props) => {
           style={{ width: `${(currentCoinsCount/allCoins) * 100}%` }}
         ></div>
         <div className="w-full h-full absolute top-0 left-0 flex justify-center items-center z-30  mix-blend-difference">
-          <p className="text-slate-500 font-medium text-sm">{`${currentCoinsCount}/${allCoins}`}</p>
+          <p className="text-slate-500 font-medium text-sm">{`${currentCoinsCount} / ${allCoins}`}</p>
         </div>
         
       </div>
