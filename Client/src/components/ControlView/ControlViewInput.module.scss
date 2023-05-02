@@ -1,7 +1,24 @@
 .inputBox {
+    display: grid;
+    grid-template-columns: 5% 90% 5%;
+    height: 40px;
+    font-size: 20px;
+    color: white;
+    font-weight: 500;
+}
+
+.deleteBtn {
     display: flex;
-    
-    .inputId {
-        background-color: aqua;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    border-radius: 100%;
+    opacity: 0.5;
+    transition: opacity 150ms;
+    background-color: #dc2626;
+    &:hover {
+        opacity: 1;
     }
 }
