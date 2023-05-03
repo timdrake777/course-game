@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ControlViewInput } from "../ControlView/ControlViewInput";
+import { ControlViewInput } from "./ControlViewInput";
 import { IInputValue } from "../../interfaces";
 import { validateInput } from "../../utils/controlsActions/validateInput";
 
@@ -60,6 +60,7 @@ export const CodeInputs = () => {
   };
 
   useEffect(() => {
+
     if (inputs.length === 0) {
       setInputs([{ value: "", hasError: false }]);
     }

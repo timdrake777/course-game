@@ -3,6 +3,8 @@ import styles from "./ControlViewInput.module.scss";
 import { validateInput } from "../../utils/controlsActions/validateInput";
 import classNames from "classnames";
 import { IInputValue, IPosition } from "../../interfaces";
+import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface InputProps {
   index: number;
@@ -17,7 +19,7 @@ interface InputProps {
 export const ControlViewInput: FC<InputProps> = (props) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [hasError, setHasError] = useState<boolean>(false);
-  const [alertPosition, setAlertPosition] = useState<IPosition>({x: 0, y: 0});
+  const [alertPosition, setAlertPosition] = useState<IPosition>({ x: 0, y: 0 });
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -37,7 +39,7 @@ export const ControlViewInput: FC<InputProps> = (props) => {
   };
 
   const showAlertMessage = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    setAlertPosition({x: e.clientX, y: e.clientY});
+    setAlertPosition({ x: e.clientX, y: e.clientY });
   };
 
   useEffect(() => {
@@ -64,7 +66,7 @@ export const ControlViewInput: FC<InputProps> = (props) => {
       />
       <div
         className={classNames(
-          "group flex justify-end items-center px-1 order-1 text-white/70 w-12",
+          "group flex justify-between items-center px-1 order-1 text-white/70 w-12",
           {
             "bg-red-800/80 peer-focus:bg-red-600/80": hasError,
             "peer-focus:bg-[#666]": !hasError,
@@ -73,13 +75,18 @@ export const ControlViewInput: FC<InputProps> = (props) => {
         onClick={onClickSection}
         onMouseMove={hasError ? showAlertMessage : undefined}
       >
-        {props.index + 1}
         {hasError && (
-          <div
-            className="fixed hidden bg-red-700 w-20 h-20 group-hover:flex"
-            style={{ left: alertPosition?.x - 100, top: alertPosition?.y - 30 }}
-          ></div>
+          <>
+            <FontAwesomeIcon icon={faCircleQuestion} size="xs"/>
+            <div
+              className={"fixed hidden group-hover:flex " + styles.errorCloud}
+              style={{ left: alertPosition?.x - 210, top: alertPosition?.y - 25 }}
+            >
+              <p className="text-slate-800 text-base font-normal">В строке ошибка, исправь ее!</p>
+            </div>
+          </>
         )}
+        <code className="grow text-end">{props.index + 1}</code>
       </div>
       <div className="flex opacity-0 order-3 items-center w-10 peer-focus:bg-[#4d4d4d] peer-focus:opacity-100 hover:opacity-100">
         <button className={styles.deleteBtn} onClick={(e) => props.deleteInput(e, props.index)}>

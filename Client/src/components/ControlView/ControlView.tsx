@@ -1,15 +1,18 @@
 
+import CodeButtons from '../CodeButtons/CodeButtons'
 import { CodeInputs } from '../CodeInputs/CodeInputs'
 import styles from './ControlView.module.scss'
 
 export const ControlView = () => {
     return (
-        <section className={styles.controlViewSection}>
-            <div className="message"></div>
-            <div className="input-section">
+        <main className={styles.controlViewSection}>
+            <section className={styles.messageSection}></section>
+            <section className={styles.inputSection}>
                 <CodeInputs />
-            </div>
-            <div className="button-section"></div>
-        </section>
+            </section>
+            <section className={styles.buttonSection}>
+                <CodeButtons/>
+            </section>
+        </main>
     )
 }
