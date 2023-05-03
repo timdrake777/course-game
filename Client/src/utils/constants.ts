@@ -3,6 +3,7 @@ export enum CharacterConfig {
   START_POSITION_X = 0,
   START_POSITION_Y = 0,
   STEP = 32,
+  ANIMATION_DURATION_SECONDS = 0.5
 }
 
 export enum AnimationType {

@@ -80,7 +80,7 @@ const changePosition = (
   }
 
   ref.current?.to({
-    duration: 0.5,
+    duration: CharacterConfig.ANIMATION_DURATION_SECONDS,
     ...changePos,
   });
 

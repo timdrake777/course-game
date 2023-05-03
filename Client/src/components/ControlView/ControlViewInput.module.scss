@@ -1,6 +1,5 @@
 .inputBox {
-    display: grid;
-    grid-template-columns: 5% 90% 5%;
+    display: flex;
     height: 40px;
     font-size: 20px;
     color: white;

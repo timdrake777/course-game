@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { ControlViewInput } from "../ControlView/ControlViewInput";
+import { IInputValue } from "../../interfaces";
+import { validateInput } from "../../utils/controlsActions/validateInput";
 
 export const CodeInputs = () => {
-  const [inputs, setInputs] = useState<string[]>([""]);
+  const [inputs, setInputs] = useState<IInputValue[]>([{ value: "", hasError: false }]);
   const [focusedInput, setFocusedInput] = useState<number>(0);
 
   const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, idx: number) => {
@@ -13,12 +15,12 @@ export const CodeInputs = () => {
         e.preventDefault();
 
         let newInputsArr = Array.from(inputs);
-        newInputsArr.splice(idx + 1, 0, "");
+        newInputsArr.splice(idx + 1, 0, { value: "", hasError: false });
         setInputs(newInputsArr);
         setFocusedInput(focusedInput + 1);
         break;
       case "Backspace":
-        if (inputs[idx] === "" && idx !== 0) {
+        if (inputs[idx].value === "" && idx !== 0) {
           deleteInput(null, idx);
           setFocusedInput(focusedInput - 1);
         }
@@ -36,7 +38,7 @@ export const CodeInputs = () => {
 
   const changeInput = (value: string, idx: number) => {
     setInputs((prev) => {
-      prev[idx] = value;
+      prev[idx] = { value: value, hasError: validateInput(value) };
       return prev;
     });
   };
@@ -59,7 +61,7 @@ export const CodeInputs = () => {
 
   useEffect(() => {
     if (inputs.length === 0) {
-      setInputs([""]);
+      setInputs([{ value: "", hasError: false }]);
     }
   }, [inputs]);
 
@@ -67,7 +69,7 @@ export const CodeInputs = () => {
     <>
       {inputs.map((value, index) => (
         <ControlViewInput
-          key={value + index + inputs.length}
+          key={value.value + index + inputs.length}
           index={index}
           arrayValue={value}
           focusedInput={focusedInput}

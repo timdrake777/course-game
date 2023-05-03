@@ -44,3 +44,8 @@ export interface ICodeBlocks {
   instanceMethod: string;
   instanceValue: string;
 }
+
+export interface IInputValue {
+  value: string;
+  hasError: boolean;
+}

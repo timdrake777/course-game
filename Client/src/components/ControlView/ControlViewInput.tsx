@@ -1,11 +1,13 @@
 import { FC, useEffect, useRef, useState } from "react";
 import styles from "./ControlViewInput.module.scss";
 import { validateInput } from "../../utils/controlsActions/validateInput";
+import classNames from "classnames";
+import { IInputValue, IPosition } from "../../interfaces";
 
 interface InputProps {
   index: number;
   focusedInput: number;
-  arrayValue: string;
+  arrayValue: IInputValue;
   changeFocus: (index: number) => void;
   deleteInput: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, idx: number) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>, idx: number) => void;
@@ -14,14 +16,16 @@ interface InputProps {
 
 export const ControlViewInput: FC<InputProps> = (props) => {
   const [inputValue, setInputValue] = useState<string>("");
+  const [hasError, setHasError] = useState<boolean>(false);
+  const [alertPosition, setAlertPosition] = useState<IPosition>({x: 0, y: 0});
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const changeInput = (e: React.ChangeEvent<HTMLInputElement> | any) => {
-    let newString =
-      e.nativeEvent.data !== null
-        ? validateInput(e.target.value, inputValue, inputRef)
-        : e.target.value;
+    let newString = e.target.value;
+    if (!validateInput(newString)) {
+      setHasError(false);
+    }
     setInputValue(newString);
     props.onChange(newString, props.index);
   };
@@ -32,6 +36,10 @@ export const ControlViewInput: FC<InputProps> = (props) => {
     }
   };
 
+  const showAlertMessage = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    setAlertPosition({x: e.clientX, y: e.clientY});
+  };
+
   useEffect(() => {
     if (inputRef.current && props.focusedInput === props.index) {
       inputRef.current.focus();
@@ -39,14 +47,15 @@ export const ControlViewInput: FC<InputProps> = (props) => {
   }, [props.focusedInput, inputRef.current]);
 
   useEffect(() => {
-    setInputValue(props.arrayValue);
+    setInputValue(props.arrayValue.value);
+    setHasError(props.arrayValue.hasError);
   }, [props.arrayValue]);
 
   return (
     <div className={styles.inputBox}>
       <input
         type="text"
-        className="peer px-1 bg-transparent focus:bg-[#4d4d4d] order-2"
+        className="peer px-1 bg-transparent focus:bg-[#4d4d4d] order-2 grow"
         value={inputValue}
         onKeyDown={(e) => props.onKeyDown(e, props.index)}
         onFocus={() => props.changeFocus(props.index)}
@@ -54,12 +63,25 @@ export const ControlViewInput: FC<InputProps> = (props) => {
         ref={inputRef}
       />
       <div
-        className="peer-focus:bg-[#666] flex justify-end items-center px-1 order-1 text-white/70"
+        className={classNames(
+          "group flex justify-end items-center px-1 order-1 text-white/70 w-12",
+          {
+            "bg-red-800/80 peer-focus:bg-red-600/80": hasError,
+            "peer-focus:bg-[#666]": !hasError,
+          }
+        )}
         onClick={onClickSection}
+        onMouseMove={hasError ? showAlertMessage : undefined}
       >
         {props.index + 1}
+        {hasError && (
+          <div
+            className="fixed hidden bg-red-700 w-20 h-20 group-hover:flex"
+            style={{ left: alertPosition?.x - 100, top: alertPosition?.y - 30 }}
+          ></div>
+        )}
       </div>
-      <div className="flex opacity-0 peer-focus:bg-[#4d4d4d] peer-focus:opacity-100 hover:opacity-100 order-3 items-center">
+      <div className="flex opacity-0 order-3 items-center w-10 peer-focus:bg-[#4d4d4d] peer-focus:opacity-100 hover:opacity-100">
         <button className={styles.deleteBtn} onClick={(e) => props.deleteInput(e, props.index)}>
           X
         </button>
