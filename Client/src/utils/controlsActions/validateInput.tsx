@@ -8,7 +8,7 @@ export const validateInput = (inputString: string, oldInputString: string, input
 
   if (lastChar === "(") {
     
-    return inputString + ")";
+    return inputString + ")"
   }
 
   if (!lastChar) {
