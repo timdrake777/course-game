@@ -26,6 +26,8 @@ export const ControlContextProvider: FC<Props> = ({children}) => {
       console.log("Нет функции");
       return
     }
+    console.log(1);
+    
     inputCallback(newString);
   }
 

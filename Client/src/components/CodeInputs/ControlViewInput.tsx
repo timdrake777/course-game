@@ -1,10 +1,11 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useContext, useEffect, useRef, useState } from "react";
 import styles from "./ControlViewInput.module.scss";
 import { validateInput } from "../../utils/controlsActions/validateInput";
 import classNames from "classnames";
 import { IInputValue, IPosition } from "../../interfaces";
 import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ControlContextValues } from "../ControlView/ControlContext";
 
 interface InputProps {
   index: number;
@@ -17,6 +18,8 @@ interface InputProps {
 }
 
 export const ControlViewInput: FC<InputProps> = (props) => {
+  const { setLineCallback } = useContext(ControlContextValues);
+
   const [inputValue, setInputValue] = useState<string>("");
   const [hasError, setHasError] = useState<boolean>(false);
   const [alertPosition, setAlertPosition] = useState<IPosition>({ x: 0, y: 0 });
@@ -39,13 +42,20 @@ export const ControlViewInput: FC<InputProps> = (props) => {
     }),
   };
 
-  const changeInput = (event: React.ChangeEvent<HTMLInputElement> | string) => {
-    let newString = typeof event === "string" ? event : event.target.value;
+  const addInputString = (newString: string) => {
+    newString = inputValue + newString;
+    console.log(1);
+    
+    changeInput(newString);
+  };
+
+  const changeInput = (value: string) => {
+    let newString = value;
 
     if (!validateInput(newString)) {
       setHasError(false);
     }
-    
+
     setInputValue(newString);
     props.onChange(newString, props.index);
   };
@@ -58,6 +68,11 @@ export const ControlViewInput: FC<InputProps> = (props) => {
 
   const showAlertMessage = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setAlertPosition({ x: e.clientX, y: e.clientY });
+  };
+
+  const onFocusInput = () => {
+    setLineCallback(addInputString);
+    props.changeFocus(props.index);
   };
 
   useEffect(() => {
@@ -81,8 +96,8 @@ export const ControlViewInput: FC<InputProps> = (props) => {
         className={currentClassNames.input}
         value={inputValue}
         onKeyDown={(e) => props.onKeyDown(e, props.index)}
-        onFocus={() => props.changeFocus(props.index)}
-        onChange={changeInput}
+        onFocus={onFocusInput}
+        onChange={(e) => changeInput(e.target.value)}
         ref={inputRef}
       />
       <div
