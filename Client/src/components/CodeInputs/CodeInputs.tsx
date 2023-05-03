@@ -31,11 +31,10 @@ export const CodeInputs = () => {
     switch (key) {
       case "Enter":
         e.preventDefault();
-        setInputs((prev) => {
-          prev.splice(idx + 1, 0, "");
-          console.log(prev);
-          return prev;
-        });
+
+        let newInputsArr = Array.from(inputs);
+        newInputsArr.splice(idx+1, 0, "");
+        setInputs(newInputsArr);
         setFocusedInput(focusedInput + 1);
         break;
     }
@@ -52,10 +51,11 @@ export const CodeInputs = () => {
 
   return (
     <>
-      {inputs.map((item, index) => (
+      {inputs.map((value, index) => (
         <ControlViewInput
           key={index}
           index={index}
+          arrayValue={value}
           focusedInput={focusedInput}
           changeFocus={changeFocus}
           onKeyDown={onInputKeyDown}
