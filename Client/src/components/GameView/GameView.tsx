@@ -12,13 +12,19 @@ import {
   IPosition,
   IPositionResponse,
 } from "../../interfaces";
+
 import storageActions from "../../utils/storageActions";
 import coinAnimation from "../../utils/gameViewActions/coinAnimation";
 import obstacleSprites from "../../utils/gameViewActions/obstacleSprites";
 import changePosition from "../../utils/gameViewActions/changePosition";
 import { AnimationType, CharacterConfig, CHARACTER_SPRITE_ANIMATIONS } from "../../utils/constants";
+import soundActions from "../../utils/gameViewActions/soundActions";
+
 import EmptyConfig from "./fragments/EmptyConfig";
 import CoinsCounter from "./fragments/CoinsCounter";
+import GameViewSettings from "./fragments/GameViewSettings";
+import LevelFailed from "./fragments/LevelFailed";
+import LevelComplete from "./fragments/LevelComplete";
 
 import coinSfx from "../../assets/Audio/coin.mp3";
 import deathSfx from "../../assets/Audio/death.mp3";
@@ -27,10 +33,6 @@ import BgImagePNG from "../../assets/Background/Floor.png";
 import characterPNG from "../../assets/Character/character.png";
 
 import styles from "./GameView.module.scss";
-import GameViewSettings from "./fragments/GameViewSettings";
-import LevelFailed from "./fragments/LevelFailed";
-import LevelComplete from "./fragments/LevelComplete";
-import soundActions from "../../utils/gameViewActions/soundActions";
 
 export const GameView = () => {
   const navigate = useNavigate();
@@ -39,6 +41,7 @@ export const GameView = () => {
   const characterRef = useRef<Konva.Sprite>(null);
   const keyUpRef = useRef<boolean>(false);
   const keyDownTimeoutRef = useRef<number>();
+  const sectionRef = useRef<HTMLInputElement>(null);
 
   const [posX, setPosX] = useState<number>(CharacterConfig.START_POSITION_X);
   const [posY, setPosY] = useState<number>(CharacterConfig.START_POSITION_Y);
@@ -189,13 +192,14 @@ export const GameView = () => {
   };
 
   const addKeyEvents = () => {
-    window.addEventListener("keydown", handleUserKeyPress);
-    window.addEventListener("keyup", handleUserKeyUp);
+    sectionRef.current?.addEventListener("keydown", handleUserKeyPress);
+    sectionRef.current?.addEventListener("keyup", handleUserKeyUp);
+    sectionRef.current?.focus();
   };
 
   const removeKeyEvents = () => {
-    window.removeEventListener("keydown", handleUserKeyPress);
-    window.removeEventListener("keyup", handleUserKeyUp);
+    sectionRef.current?.removeEventListener("keydown", handleUserKeyPress);
+    sectionRef.current?.removeEventListener("keyup", handleUserKeyUp);
   };
 
   useEffect(() => {
@@ -212,7 +216,9 @@ export const GameView = () => {
   return (
     <section
       className={"w-1/2 h-full flex items-center justify-center relative " + styles.gameViewSection}
+      onClick={() => sectionRef.current?.focus()}
     >
+      <input type="text" name="" ref={sectionRef} className="w-0 h-0"/>
       {levelConfig ? (
         <>
           <div className="py-3 px-4 w-full absolute top-0 left-0 flex justify-between items-center">
