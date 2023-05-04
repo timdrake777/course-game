@@ -7,12 +7,10 @@ export const CodeInputs = () => {
   const [inputs, setInputs] = useState<IInputValue[]>([{ value: "", hasError: false }]);
   const [focusedInput, setFocusedInput] = useState<number>(0);
 
-  const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, idx: number) => {
-    const { key } = e;
-
+  const onInputKeyDown = (key: string, idx: number, e?: React.KeyboardEvent<HTMLInputElement>) => {
     switch (key) {
       case "Enter":
-        e.preventDefault();
+        e && e.preventDefault();
 
         let newInputsArr = Array.from(inputs);
         newInputsArr.splice(idx + 1, 0, { value: "", hasError: false });
@@ -26,11 +24,11 @@ export const CodeInputs = () => {
         }
         break;
       case "ArrowUp":
-        e.preventDefault();
+        e && e.preventDefault();
         setFocusedInput(idx !== 0 ? focusedInput - 1 : 0);
         break;
       case "ArrowDown":
-        e.preventDefault();
+        e && e.preventDefault();
         setFocusedInput(idx !== inputs.length - 1 ? focusedInput + 1 : idx);
         break;
     }
@@ -56,12 +54,10 @@ export const CodeInputs = () => {
   };
 
   const changeFocus = (index: number) => {
-
     setFocusedInput(index);
   };
 
   useEffect(() => {
-
     if (inputs.length === 0) {
       setInputs([{ value: "", hasError: false }]);
     }

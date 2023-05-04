@@ -5,7 +5,7 @@ interface Props {
 }
 
 interface IInputCallback {
-  callback: (newString: string) => void;
+  callback: (newString: string, deepLevel: number) => void;
 }
 
 interface IDropStatesCallback {
@@ -14,8 +14,8 @@ interface IDropStatesCallback {
 
 interface ControlContext {
   currentButtonsList: number;
-  setLineCallback: (callback: (newString: string) => void) => void;
-  setCurrentLineValue: (newString: string) => void;
+  setLineCallback: (callback: (newString: string, deepLevel: number) => void) => void;
+  setCurrentLineValue: (newString: string, deepLevel: number) => void;
   addStateCallback: (callback: () => void) => void;
   changeCurrentButtonList: (index: number) => void;
   clearStateCallbacks: () => void;
@@ -36,7 +36,7 @@ export const ControlContextProvider: FC<Props> = ({ children }) => {
 
   const [currentButtonsList, setCurrentButtonsList] = useState<number>(-1);
 
-  const setLineCallback = (callback: (newString: string) => void) => {
+  const setLineCallback = (callback: (newString: string, deepLevel: number) => void) => {
     inputCallback.current = { callback };
   };
 
@@ -50,12 +50,12 @@ export const ControlContextProvider: FC<Props> = ({ children }) => {
     });
   };
 
-  const setCurrentLineValue = (newString: string) => {
+  const setCurrentLineValue = (newString: string, deepLevel: number) => {
     if (!inputCallback.current) {
       console.log("Нет функции");
       return;
     }
-    inputCallback.current.callback(newString);
+    inputCallback.current.callback(newString, deepLevel);
   };
 
   const changeCurrentButtonList = (index: number) => {

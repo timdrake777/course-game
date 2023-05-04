@@ -13,7 +13,7 @@ interface InputProps {
   arrayValue: IInputValue;
   changeFocus: (index: number) => void;
   deleteInput: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, idx: number) => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>, idx: number) => void;
+  onKeyDown: (key: string, idx: number, e?: React.KeyboardEvent<HTMLInputElement>) => void;
   onChange: (value: string, idx: number) => void;
 }
 
@@ -47,8 +47,12 @@ export const ControlViewInput: FC<InputProps> = (props) => {
     props.onChange(str, props.index);
   };
 
-  const addInputString = (newString: string) => {
+  const addInputString = (newString: string, deepLevel: number) => {
+    
     changeInput(inputRef.current?.value + newString);
+    if (deepLevel === 2) {
+      props.onKeyDown("Enter", props.index);
+    }
   };
 
   const changeInput = (value: string) => {
@@ -96,7 +100,7 @@ export const ControlViewInput: FC<InputProps> = (props) => {
         type="text"
         className={currentClassNames.input}
         value={inputValue}
-        onKeyDown={(e) => props.onKeyDown(e, props.index)}
+        onKeyDown={(e) => props.onKeyDown(e.key, props.index, e)}
         onFocus={onFocusInput}
         onChange={(e) => changeInput(e.target.value)}
         ref={inputRef}

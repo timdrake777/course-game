@@ -32,7 +32,7 @@ const CodeButtonView = (props: Props) => {
     props.changeButtonState(true, props.index);
     changeCurrentButtonList(props.buttonValue.level);
     addStateCallback(clearState);
-    setCurrentLineValue(props.buttonValue.input);
+    setCurrentLineValue(props.buttonValue.input, props.buttonValue.level);
 
     if (!props.buttonValue.children) {
       props.changeButtonState(false, props.index);
