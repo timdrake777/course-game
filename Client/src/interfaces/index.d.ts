@@ -49,3 +49,16 @@ export interface IInputValue {
   value: string;
   hasError: boolean;
 }
+
+export interface IButtonValue {
+  label: string;
+  input: string;
+  color: string;
+  level: number;
+  children?:IButtonValue[];
+}
+
+export interface IButtonState {
+  state: boolean;
+  index: number;
+}

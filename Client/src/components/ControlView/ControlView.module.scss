@@ -1,6 +1,7 @@
 .controlViewSection {
   width: 50%;
   height: 100%;
+  position: relative;
   display: grid;
   grid-template-rows: 10% 80% 10%;
   background-color: black;

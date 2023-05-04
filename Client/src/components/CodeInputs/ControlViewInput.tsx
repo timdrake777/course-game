@@ -18,7 +18,7 @@ interface InputProps {
 }
 
 export const ControlViewInput: FC<InputProps> = (props) => {
-  const { setLineCallback } = useContext(ControlContextValues);
+  const { setLineCallback, currentButtonsList } = useContext(ControlContextValues);
 
   const [inputValue, setInputValue] = useState<string>("");
   const [hasError, setHasError] = useState<boolean>(false);
@@ -28,7 +28,7 @@ export const ControlViewInput: FC<InputProps> = (props) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const currentClassNames = {
-    input: classNames("px-1 bg-transparent order-2 grow", { "bg-[#4d4d4d]": isFocused }),
+    input: classNames("px-1 bg-transparent order-2 grow font-mono", { "!bg-[#4d4d4d]": isFocused }),
     lineIndex: classNames(
       "group flex justify-between items-center px-1 order-1 text-white/70 w-12 select-none",
       {
@@ -42,22 +42,23 @@ export const ControlViewInput: FC<InputProps> = (props) => {
     }),
   };
 
+  const setString = (str: string) => {
+    setInputValue(str);
+    props.onChange(str, props.index);
+  };
+
   const addInputString = (newString: string) => {
-    newString = inputValue + newString;
-    console.log(1);
-    
-    changeInput(newString);
+    changeInput(inputRef.current?.value + newString);
   };
 
   const changeInput = (value: string) => {
-    let newString = value;
+    setLineCallback(addInputString);
 
-    if (!validateInput(newString)) {
+    if (!validateInput(value)) {
       setHasError(false);
     }
 
-    setInputValue(newString);
-    props.onChange(newString, props.index);
+    setString(value);
   };
 
   const onClickSection = () => {
@@ -99,6 +100,7 @@ export const ControlViewInput: FC<InputProps> = (props) => {
         onFocus={onFocusInput}
         onChange={(e) => changeInput(e.target.value)}
         ref={inputRef}
+        disabled={currentButtonsList !== -1}
       />
       <div
         className={currentClassNames.lineIndex}
@@ -119,7 +121,11 @@ export const ControlViewInput: FC<InputProps> = (props) => {
         <code className="grow text-end">{props.index + 1}</code>
       </div>
       <div className={currentClassNames.cancel}>
-        <button className={styles.deleteBtn} onClick={(e) => props.deleteInput(e, props.index)}>
+        <button
+          className={styles.deleteBtn}
+          onClick={(e) => props.deleteInput(e, props.index)}
+          disabled={currentButtonsList !== -1}
+        >
           X
         </button>
       </div>

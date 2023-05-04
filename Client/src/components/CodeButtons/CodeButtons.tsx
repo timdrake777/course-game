@@ -1,12 +1,9 @@
-import { useContext } from "react";
-import CodeButtonView from "./CodeButtonView";
-import { ControlContextValues } from "../ControlView/ControlContext";
+import CodeCharacterButton from "./CodeCharacterButton";
 
 const CodeButtons = () => {
-  const {setCurrentLine} = useContext(ControlContextValues)
   return (
     <>
-      <CodeButtonView onClick={setCurrentLine}/>
+      <CodeCharacterButton/>
     </>
   );
 };

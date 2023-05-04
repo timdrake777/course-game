@@ -56,6 +56,7 @@ export const CodeInputs = () => {
   };
 
   const changeFocus = (index: number) => {
+
     setFocusedInput(index);
   };
 
