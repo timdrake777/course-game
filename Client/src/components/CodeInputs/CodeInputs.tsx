@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ControlViewInput } from "./ControlViewInput";
 import { IInputValue } from "../../interfaces";
 import { validateInput } from "../../utils/controlsActions/validateInput";
+import { MessageContextValues } from "../MainPage/MessageContext";
 
 export const CodeInputs = () => {
+  const {setInputsInContext} = useContext(MessageContextValues)
   const [inputs, setInputs] = useState<IInputValue[]>([{ value: "", hasError: false }]);
   const [focusedInput, setFocusedInput] = useState<number>(0);
 
@@ -11,7 +13,6 @@ export const CodeInputs = () => {
     switch (key) {
       case "Enter":
         e && e.preventDefault();
-
         let newInputsArr = Array.from(inputs);
         newInputsArr.splice(idx + 1, 0, { value: "", hasError: false });
         setInputs(newInputsArr);
@@ -61,6 +62,7 @@ export const CodeInputs = () => {
     if (inputs.length === 0) {
       setInputs([{ value: "", hasError: false }]);
     }
+    setInputsInContext(inputs);
   }, [inputs]);
 
   return (

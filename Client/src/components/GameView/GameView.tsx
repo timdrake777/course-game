@@ -1,5 +1,5 @@
 import Konva from "konva";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Layer, Rect, Sprite, Stage } from "react-konva";
 import { useNavigate } from "react-router";
 import useImage from "use-image";
@@ -33,9 +33,15 @@ import BgImagePNG from "../../assets/Background/Floor.png";
 import characterPNG from "../../assets/Character/character.png";
 
 import styles from "./GameView.module.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import PlayButton from "./fragments/PlayButton";
+import { MessageContextValues } from "../MainPage/MessageContext";
 
 export const GameView = () => {
   const navigate = useNavigate();
+
+  const {runCode} = useContext(MessageContextValues);
 
   const viewRef = useRef<Konva.Stage>(null);
   const characterRef = useRef<Konva.Sprite>(null);
@@ -215,17 +221,17 @@ export const GameView = () => {
 
   return (
     <section
-      className={"w-1/2 h-full flex items-center justify-center relative " + styles.gameViewSection}
+      className={"w-1/2 h-full flex flex-col items-center justify-between relative " + styles.gameViewSection}
       onClick={() => sectionRef.current?.focus()}
     >
-      <input type="text" name="" ref={sectionRef} className="w-0 h-0"/>
+      <input type="text" name="" ref={sectionRef} className="w-0 h-0" />
       {levelConfig ? (
         <>
-          <div className="py-3 px-4 w-full absolute top-0 left-0 flex justify-between items-center">
+          <header className="py-3 px-4 w-full flex justify-between items-center">
             <GameViewSettings />
             <CoinsCounter currentCoinsCount={coinsCount} allCoins={obstacles.coins} />
-          </div>
-          <div className="stage relative">
+          </header>
+          <main className="stage relative flex items-center grow">
             {gameOverView}
             <Stage height={levelConfig.height()} width={levelConfig.width()} ref={viewRef}>
               <Layer>
@@ -250,7 +256,10 @@ export const GameView = () => {
                 />
               </Layer>
             </Stage>
-          </div>
+          </main>
+          <footer className="flex items-center justify-center w-full py-5 px-4">
+            <PlayButton onClick={runCode}/>
+          </footer>
         </>
       ) : (
         <EmptyConfig navigate={navigate} />
