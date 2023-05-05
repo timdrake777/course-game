@@ -172,3 +172,9 @@ export const CODE_BUTTONS_LIST: IButtonValue[] = [
     ],
   },
 ];
+
+export const CHARACTER_ACTIONS = [
+  ["character"],
+  ["up", "down", "right", "left"],
+  ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+];

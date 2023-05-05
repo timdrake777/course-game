@@ -5,7 +5,7 @@ import { validateInput } from "../../utils/controlsActions/validateInput";
 import { MessageContextValues } from "../MainPage/MessageContext";
 
 export const CodeInputs = () => {
-  const {setInputsInContext} = useContext(MessageContextValues)
+  const {setInputsInContext, setFocusFunction} = useContext(MessageContextValues)
   const [inputs, setInputs] = useState<IInputValue[]>([{ value: "", hasError: false }]);
   const [focusedInput, setFocusedInput] = useState<number>(0);
 
@@ -64,6 +64,10 @@ export const CodeInputs = () => {
     }
     setInputsInContext(inputs);
   }, [inputs]);
+
+  useEffect(() => {
+    setFocusFunction(changeFocus);
+  }, [])
 
   return (
     <>

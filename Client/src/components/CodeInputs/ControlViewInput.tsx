@@ -6,6 +6,7 @@ import { IInputValue, IPosition } from "../../interfaces";
 import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ControlContextValues } from "../ControlView/ControlContext";
+import { MessageContextValues } from "../MainPage/MessageContext";
 
 interface InputProps {
   index: number;
@@ -19,6 +20,7 @@ interface InputProps {
 
 export const ControlViewInput: FC<InputProps> = (props) => {
   const { setLineCallback, currentButtonsList } = useContext(ControlContextValues);
+  const {isGameRunning} = useContext(MessageContextValues);
 
   const [inputValue, setInputValue] = useState<string>("");
   const [hasError, setHasError] = useState<boolean>(false);
@@ -104,7 +106,7 @@ export const ControlViewInput: FC<InputProps> = (props) => {
         onFocus={onFocusInput}
         onChange={(e) => changeInput(e.target.value)}
         ref={inputRef}
-        disabled={currentButtonsList !== -1}
+        disabled={currentButtonsList !== -1 || isGameRunning}
       />
       <div
         className={currentClassNames.lineIndex}

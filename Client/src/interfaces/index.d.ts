@@ -62,3 +62,8 @@ export interface IButtonState {
   state: boolean;
   index: number;
 }
+
+export interface ICommandForGame {
+  command: string;
+  count: number;
+}

@@ -1,13 +1,5 @@
 import Konva from "konva";
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Layer, Rect, Sprite, Stage } from "react-konva";
 import { useNavigate } from "react-router";
 import useImage from "use-image";
@@ -49,15 +41,13 @@ import styles from "./GameView.module.scss";
 export const GameView = () => {
   const navigate = useNavigate();
 
-  const { runCode, isGameRunning, currentCommand } = useContext(MessageContextValues);
+  const {runCode, isGameRunning} = useContext(MessageContextValues);
 
   const viewRef = useRef<Konva.Stage>(null);
   const characterRef = useRef<Konva.Sprite>(null);
   const keyUpRef = useRef<boolean>(false);
   const keyDownTimeoutRef = useRef<number>();
   const sectionRef = useRef<HTMLInputElement>(null);
-
-  const gameOverRef = useRef<boolean>(false);
 
   const [posX, setPosX] = useState<number>(CharacterConfig.START_POSITION_X);
   const [posY, setPosY] = useState<number>(CharacterConfig.START_POSITION_Y);
@@ -93,8 +83,10 @@ export const GameView = () => {
   };
 
   const handleUserKeyPress = useCallback(
-    (message: ICommandForGame, operationCount: number = 1) => {
-      if (!levelConfig || operationCount > message.count || gameOverRef.current) {
+    (message: ICommandForGame) => {
+      const { key } = event;
+
+      if (keyDownTimeoutRef.current || !levelConfig) {
         return;
       }
 
@@ -105,21 +97,28 @@ export const GameView = () => {
 
       let response: IPositionResponse = { code: 0, id: "" };
 
-      switch (message.command) {
-        case "up":
+      switch (key) {
+        case "ArrowUp":
+          event.preventDefault();
+          keyDownTimeoutRef.current = arrowTimeout();
           response = changePosition(characterRef, absolutePosition, setPosY, "y", -1, levelConfig);
           setAnimationType(AnimationType.UP);
           break;
-        case "down":
-
+        case "ArrowDown":
+          event.preventDefault();
+          keyDownTimeoutRef.current = arrowTimeout();
           response = changePosition(characterRef, absolutePosition, setPosY, "y", 1, levelConfig);
           setAnimationType(AnimationType.DOWN);
           break;
-        case "left":
+        case "ArrowLeft":
+          event.preventDefault();
+          keyDownTimeoutRef.current = arrowTimeout();
           response = changePosition(characterRef, absolutePosition, setPosX, "x", -1, levelConfig);
           setAnimationType(AnimationType.LEFT);
           break;
-        case "right":
+        case "ArrowRight":
+          event.preventDefault();
+          keyDownTimeoutRef.current = arrowTimeout();
           response = changePosition(characterRef, absolutePosition, setPosX, "x", 1, levelConfig);
           setAnimationType(AnimationType.RIGHT);
           break;
@@ -130,7 +129,6 @@ export const GameView = () => {
 
       switch (response.code) {
         case 1:
-          gameOverRef.current = true;
           setTimeout(() => setAnimationType(AnimationType.DEAD), 100);
           setTimeout(() => {
             characterRef.current?.stop();
@@ -155,10 +153,6 @@ export const GameView = () => {
         default:
           break;
       }
-
-      setTimeout(() => {
-        handleUserKeyPress(message, operationCount + 1);
-      }, CharacterConfig.ANIMATION_DURATION_SECONDS * 1000);
     },
     [posX, posY, levelConfig]
   );
@@ -187,6 +181,11 @@ export const GameView = () => {
   };
 
   const changeGameState = () => {
+    if (gameState === 1) {
+      addKeyEvents();
+      return;
+    }
+
     clearTimeout(keyDownTimeoutRef.current);
     if (gameState === 0) {
       setTimeout(() => setGameOverView(<LevelFailed restartGame={restartGame} />), 300);
@@ -198,21 +197,23 @@ export const GameView = () => {
     }
   };
 
-  const runGame = () => {
-    restartGame();
-    runCode();
+  const addKeyEvents = () => {
+    sectionRef.current?.addEventListener("keydown", handleUserKeyPress);
+    sectionRef.current?.addEventListener("keyup", handleUserKeyUp);
+    sectionRef.current?.focus();
+  };
+
+  const removeKeyEvents = () => {
+    sectionRef.current?.removeEventListener("keydown", handleUserKeyPress);
+    sectionRef.current?.removeEventListener("keyup", handleUserKeyUp);
   };
 
   useEffect(() => {
     changeGameState();
-  }, [gameState]);
-
-  useEffect(() => {
-    if (!currentCommand) {
-      return;
-    }
-    handleUserKeyPress(currentCommand);
-  }, [currentCommand]);
+    return () => {
+      removeKeyEvents();
+    };
+  }, [handleUserKeyPress, gameState]);
 
   useLayoutEffect(() => {
     characterRef.current?.start();
@@ -220,9 +221,7 @@ export const GameView = () => {
 
   return (
     <section
-      className={
-        "w-1/2 h-full flex flex-col items-center justify-between relative " + styles.gameViewSection
-      }
+      className={"w-1/2 h-full flex flex-col items-center justify-between relative " + styles.gameViewSection}
       onClick={() => sectionRef.current?.focus()}
     >
       <input type="text" name="" ref={sectionRef} className="w-0 h-0" />
@@ -259,7 +258,7 @@ export const GameView = () => {
             </Stage>
           </main>
           <footer className="flex items-center justify-center w-full py-5 px-4">
-            <PlayButton onClick={runGame} disabled={isGameRunning} />
+            <PlayButton onClick={runCode} disabled={isGameRunning}/>
           </footer>
         </>
       ) : (
