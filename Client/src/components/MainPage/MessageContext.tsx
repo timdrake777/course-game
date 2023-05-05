@@ -14,6 +14,7 @@ interface IMessageContext {
   currentCommand: ICommandForGame | undefined;
   setInputsInContext: (inputs: IInputValue[]) => void;
   setFocusFunction: (callback: IFocusFunc) => void;
+  setGameIsOver: (state: boolean) => void;
   runCode: () => void;
 }
 
@@ -22,15 +23,16 @@ export const MessageContextValues = createContext<IMessageContext>({
   currentCommand: undefined,
   setInputsInContext: () => {},
   setFocusFunction: () => {},
+  setGameIsOver: () => {},
   runCode: () => {},
 });
 
 export const MessageContextProvider: FC<Props> = ({ children }) => {
-
   const [isGameRunning, setIsGameRunning] = useState<boolean>(false);
   const [currentCommand, setCurrentCommand] = useState<ICommandForGame>();
 
   const inputValues = useRef<IInputValue[]>([]);
+  const gameIsOver = useRef<boolean>(false);
   const focusFunction = useRef<{ callback: IFocusFunc }>({ callback: () => {} });
 
   const setInputsInContext = (inputs: IInputValue[]) => {
@@ -41,9 +43,18 @@ export const MessageContextProvider: FC<Props> = ({ children }) => {
     focusFunction.current.callback = callback;
   };
 
-  const sendCommands = (parsedInputsArray: (ICommandForGame)[], idx: number) => {
-    focusFunction.current?.callback(idx);
+  const setGameIsOver = (state: boolean) => {
+    gameIsOver.current = state;
+  }
+
+  const sendCommands = (parsedInputsArray: ICommandForGame[], idx: number) => {
+    if (gameIsOver.current) {
+      setIsGameRunning(false);
+      return;
+    }
     
+    focusFunction.current?.callback(idx);
+
     const command = parsedInputsArray[idx];
     if (command.command === "empty") {
       if (parsedInputsArray[idx + 1] === undefined) {
@@ -54,7 +65,9 @@ export const MessageContextProvider: FC<Props> = ({ children }) => {
       sendCommands(parsedInputsArray, idx + 1);
       return;
     }
-    const timeoutTime = CharacterConfig.ANIMATION_DURATION_SECONDS * 1000 * command.count;
+    const timeoutTime =
+      CharacterConfig.ANIMATION_DURATION_SECONDS * 1000 * command.count +
+      CharacterConfig.ANIMATION_DURATION_SECONDS * 1000;
     setCurrentCommand(command);
     setTimeout(() => {
       sendCommands(parsedInputsArray, idx + 1);
@@ -62,7 +75,6 @@ export const MessageContextProvider: FC<Props> = ({ children }) => {
   };
 
   const runCode = () => {
-    
     let errorKey = false;
 
     let parsedInputsArray = inputValues.current.map((item) => {
@@ -79,7 +91,7 @@ export const MessageContextProvider: FC<Props> = ({ children }) => {
       return parsedString;
     });
 
-    if (errorKey) {
+    if (errorKey || parsedInputsArray.length === 0) {
       console.log("error");
       return;
     }
@@ -95,6 +107,7 @@ export const MessageContextProvider: FC<Props> = ({ children }) => {
         currentCommand,
         setFocusFunction,
         setInputsInContext,
+        setGameIsOver,
         runCode,
       }}
     >

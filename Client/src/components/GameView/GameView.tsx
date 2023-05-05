@@ -49,7 +49,8 @@ import styles from "./GameView.module.scss";
 export const GameView = () => {
   const navigate = useNavigate();
 
-  const { runCode, isGameRunning, currentCommand } = useContext(MessageContextValues);
+  const { runCode, setGameIsOver, isGameRunning, currentCommand } =
+    useContext(MessageContextValues);
 
   const viewRef = useRef<Konva.Stage>(null);
   const characterRef = useRef<Konva.Sprite>(null);
@@ -58,6 +59,11 @@ export const GameView = () => {
   const sectionRef = useRef<HTMLInputElement>(null);
 
   const gameOverRef = useRef<boolean>(false);
+  const positionRef = useRef<IPosition>({
+    x: CharacterConfig.START_POSITION_X,
+    y: CharacterConfig.START_POSITION_Y,
+  });
+  const coinsCountRef = useRef<number>(0);
 
   const [posX, setPosX] = useState<number>(CharacterConfig.START_POSITION_X);
   const [posY, setPosY] = useState<number>(CharacterConfig.START_POSITION_Y);
@@ -94,14 +100,22 @@ export const GameView = () => {
 
   const handleUserKeyPress = useCallback(
     (message: ICommandForGame, operationCount: number = 1) => {
+      
       if (!levelConfig || operationCount > message.count || gameOverRef.current) {
+        if (gameOverRef.current) {
+          setGameIsOver(true);
+        }
+        setAnimationType((prev) => {
+          if (prev !== AnimationType.DEAD) {
+            prev = AnimationType.IDLE;
+          }
+          return prev;
+        });
+
         return;
       }
 
-      let absolutePosition: IPosition = {
-        x: posX,
-        y: posY,
-      };
+      let absolutePosition: IPosition = positionRef.current;
 
       let response: IPositionResponse = { code: 0, id: "" };
 
@@ -111,7 +125,6 @@ export const GameView = () => {
           setAnimationType(AnimationType.UP);
           break;
         case "down":
-
           response = changePosition(characterRef, absolutePosition, setPosY, "y", 1, levelConfig);
           setAnimationType(AnimationType.DOWN);
           break;
@@ -139,17 +152,19 @@ export const GameView = () => {
           soundActions.playSound(deathSound);
           break;
         case 2:
-          let currentCoinsCount = coinsCount + 1;
+          let currentCoinsCount = coinsCountRef.current + 1;
           let sprite = viewRef.current?.findOne(`#${response.id}`) as Konva.Sprite;
 
           if (!sprite) break;
 
           if (currentCoinsCount === obstacles.coins) {
             setGameState(2);
+            gameOverRef.current = true;
             coinGetSound.addEventListener("ended", playCompleteSound);
           }
           soundActions.playSound(coinGetSound);
           coinAnimation(sprite, response);
+          coinsCountRef.current = currentCoinsCount;
           setCoinsCount(currentCoinsCount);
           break;
         default:
@@ -163,10 +178,6 @@ export const GameView = () => {
     [posX, posY, levelConfig]
   );
 
-  const handleUserKeyUp = () => {
-    keyUpRef.current = true;
-  };
-
   const restartGame = () => {
     characterRef.current?.to({
       duration: 0,
@@ -175,6 +186,7 @@ export const GameView = () => {
     });
     characterRef.current?.start();
     keyDownTimeoutRef.current = 0;
+    gameOverRef.current = false;
     soundActions.stopSound(levelCompleteSound);
     soundActions.stopSound(deathSound);
     setCoinsCount(0);
@@ -183,6 +195,7 @@ export const GameView = () => {
     setAnimationType(AnimationType.IDLE);
     setGameOverView(null);
     setGameState(1);
+    setGameIsOver(false);
     setLevelConfig(storageActions.getLevelConfig());
   };
 
@@ -200,12 +213,18 @@ export const GameView = () => {
 
   const runGame = () => {
     restartGame();
-    runCode();
+    setTimeout(() => {
+      runCode();
+    }, 100);
   };
 
   useEffect(() => {
     changeGameState();
   }, [gameState]);
+
+  useEffect(() => {
+    positionRef.current = { x: posX, y: posY };
+  }, [posX, posY]);
 
   useEffect(() => {
     if (!currentCommand) {

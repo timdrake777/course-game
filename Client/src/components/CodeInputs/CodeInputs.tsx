@@ -5,7 +5,7 @@ import { validateInput } from "../../utils/controlsActions/validateInput";
 import { MessageContextValues } from "../MainPage/MessageContext";
 
 export const CodeInputs = () => {
-  const {setInputsInContext, setFocusFunction} = useContext(MessageContextValues)
+  const { setInputsInContext, setFocusFunction } = useContext(MessageContextValues);
   const [inputs, setInputs] = useState<IInputValue[]>([{ value: "", hasError: false }]);
   const [focusedInput, setFocusedInput] = useState<number>(0);
 
@@ -52,9 +52,13 @@ export const CodeInputs = () => {
     }
 
     setInputs(inputs.filter((_, index) => index !== idx));
+    setFocusedInput((prev) => (prev - 1 < 0 ? 0 : prev - 1));
   };
 
   const changeFocus = (index: number) => {
+    if (index < 0) {
+      index = 0;
+    }
     setFocusedInput(index);
   };
 
@@ -62,12 +66,14 @@ export const CodeInputs = () => {
     if (inputs.length === 0) {
       setInputs([{ value: "", hasError: false }]);
     }
+    console.log(inputs);
+
     setInputsInContext(inputs);
   }, [inputs]);
 
   useEffect(() => {
     setFocusFunction(changeFocus);
-  }, [])
+  }, []);
 
   return (
     <>
