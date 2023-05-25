@@ -66,8 +66,6 @@ export const CodeInputs = () => {
     if (inputs.length === 0) {
       setInputs([{ value: "", hasError: false }]);
     }
-    console.log(inputs);
-
     setInputsInContext(inputs);
   }, [inputs]);
 

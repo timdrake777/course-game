@@ -100,7 +100,6 @@ export const GameView = () => {
 
   const handleUserKeyPress = useCallback(
     (message: ICommandForGame, operationCount: number = 1) => {
-      
       if (!levelConfig || operationCount > message.count || gameOverRef.current) {
         if (gameOverRef.current) {
           setGameIsOver(true);
@@ -187,6 +186,7 @@ export const GameView = () => {
     characterRef.current?.start();
     keyDownTimeoutRef.current = 0;
     gameOverRef.current = false;
+    coinsCountRef.current = 0;
     soundActions.stopSound(levelCompleteSound);
     soundActions.stopSound(deathSound);
     setCoinsCount(0);
@@ -251,31 +251,33 @@ export const GameView = () => {
             <GameViewSettings />
             <CoinsCounter currentCoinsCount={coinsCount} allCoins={obstacles.coins} />
           </header>
-          <main className="stage relative flex items-center grow">
-            {gameOverView}
-            <Stage height={levelConfig.height()} width={levelConfig.width()} ref={viewRef}>
-              <Layer>
-                <Rect
-                  fillPatternImage={bgImage as HTMLImageElement}
-                  width={levelConfig.width()}
-                  height={levelConfig.height()}
-                />
-                {obstacles?.elements}
-                <Sprite
-                  ref={characterRef}
-                  width={CharacterConfig.CHARACTER_SIZE}
-                  height={CharacterConfig.CHARACTER_SIZE}
-                  x={CharacterConfig.START_POSITION_X}
-                  y={CharacterConfig.START_POSITION_Y}
-                  scale={{ x: 0.65, y: 0.65 }}
-                  image={characterImage as HTMLImageElement}
-                  animations={CHARACTER_SPRITE_ANIMATIONS}
-                  frameRate={7}
-                  frameIndex={0}
-                  animation={animationType}
-                />
-              </Layer>
-            </Stage>
+          <main className="stage flex items-center grow">
+            <div className="relative">
+              {gameOverView}
+              <Stage height={levelConfig.height()} width={levelConfig.width()} ref={viewRef}>
+                <Layer>
+                  <Rect
+                    fillPatternImage={bgImage as HTMLImageElement}
+                    width={levelConfig.width()}
+                    height={levelConfig.height()}
+                  />
+                  {obstacles?.elements}
+                  <Sprite
+                    ref={characterRef}
+                    width={CharacterConfig.CHARACTER_SIZE}
+                    height={CharacterConfig.CHARACTER_SIZE}
+                    x={CharacterConfig.START_POSITION_X}
+                    y={CharacterConfig.START_POSITION_Y}
+                    scale={{ x: 0.65, y: 0.65 }}
+                    image={characterImage as HTMLImageElement}
+                    animations={CHARACTER_SPRITE_ANIMATIONS}
+                    frameRate={7}
+                    frameIndex={0}
+                    animation={animationType}
+                  />
+                </Layer>
+              </Stage>
+            </div>
           </main>
           <footer className="flex items-center justify-center w-full py-5 px-4">
             <PlayButton onClick={runGame} disabled={isGameRunning} />
